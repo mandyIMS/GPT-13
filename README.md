@@ -7,6 +7,16 @@ usable on systems whose bundled WebKit is too old for the ChatGPT website.
 This project is **not affiliated with, endorsed by, or sponsored by OpenAI**.
 ChatGPT and OpenAI are trademarks of their respective owner.
 
+## Acknowledgements
+
+GPT-13 is a focused derivative of
+[Reynard Browser](https://github.com/minh-ton/reynard-browser).  Reynard
+Browser provides the original iOS application structure and Gecko integration
+on which this project is built; GPT-13 narrows that foundation to a single
+ChatGPT client and adds its TrollStore-oriented workflow.  Please see the
+upstream project and [NOTICE.md](NOTICE.md) for the full upstream and
+third-party acknowledgements.
+
 ## Status
 
 GPT-13 is experimental software for iOS 13 and later. The current release is
@@ -84,9 +94,9 @@ container in a bug report.
 
 ## Upstream and licensing
 
-GPT-13 is derived from [Reynard Browser](https://github.com/minh-ton/reynard-browser)
-and embeds Mozilla Firefox Gecko through a pinned Git submodule. Upstream
-credits and third-party notices are recorded in [NOTICE.md](NOTICE.md).
+GPT-13 is derived from Reynard Browser and embeds Mozilla Firefox Gecko through
+a pinned Git submodule. Upstream credits and third-party notices are recorded
+in [NOTICE.md](NOTICE.md).
 
 The project source is GPL-3.0, except the files under `patches/`,
 which modify Firefox Gecko and are licensed under MPL-2.0. See
