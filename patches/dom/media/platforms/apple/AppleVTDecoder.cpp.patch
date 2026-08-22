@@ -1,0 +1,88 @@
+diff --git a/dom/media/platforms/apple/AppleVTDecoder.cpp b/dom/media/platforms/apple/AppleVTDecoder.cpp
+index d6b597d8..93a698fc 100644
+--- a/dom/media/platforms/apple/AppleVTDecoder.cpp
++++ b/dom/media/platforms/apple/AppleVTDecoder.cpp
+@@ -675,22 +675,29 @@ MediaResult AppleVTDecoder::InitializeSession() {
+                        RESULT_DETAIL("Couldn't create decompression session!"));
+   }
+
+-  CFBooleanRef isUsingHW = nullptr;
+-  rv = VTSessionCopyProperty(
+-      mSession,
+-      kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder,
+-      kCFAllocatorDefault, &isUsingHW);
+-  if (rv == noErr) {
+-    mIsHardwareAccelerated = isUsingHW == kCFBooleanTrue;
+-    LOG("AppleVTDecoder: %s hardware accelerated decoding",
+-        mIsHardwareAccelerated ? "using" : "not using");
++  if (__builtin_available(iOS 17.0, *)) {
++    CFBooleanRef isUsingHW = nullptr;
++    rv = VTSessionCopyProperty(
++        mSession,
++        kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder,
++        kCFAllocatorDefault, &isUsingHW);
++    if (rv == noErr) {
++      mIsHardwareAccelerated = isUsingHW == kCFBooleanTrue;
++      LOG("AppleVTDecoder: %s hardware accelerated decoding",
++          mIsHardwareAccelerated ? "using" : "not using");
++    } else {
++      LOG("AppleVTDecoder: maybe hardware accelerated decoding "
++          "(VTSessionCopyProperty query failed %d)",
++          static_cast<int>(rv));
++    }
++    if (isUsingHW) {
++      CFRelease(isUsingHW);
++    }
+   } else {
+-    LOG("AppleVTDecoder: maybe hardware accelerated decoding "
+-        "(VTSessionCopyProperty query failed %d)",
+-        static_cast<int>(rv));
+-  }
+-  if (isUsingHW) {
+-    CFRelease(isUsingHW);
++    // Before iOS 17 VideoToolbox did not expose the query key, while iOS
++    // decoding sessions were hardware-backed. Preserve hardware capability
++    // reporting without referencing an unavailable symbol on iOS 15.
++    mIsHardwareAccelerated = true;
+   }
+ 
+   return NS_OK;
+@@ -737,21 +744,24 @@ CFDictionaryRef AppleVTDecoder::CreateDecoderExtensions() {
+ }
+ 
+ CFDictionaryRef AppleVTDecoder::CreateDecoderSpecification() {
+-  const void* specKeys[] = {
+-      kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder};
+-  const void* specValues[1];
+-  if (gfx::gfxVars::CanUseHardwareVideoDecoding()) {
+-    specValues[0] = kCFBooleanTrue;
+-  } else {
+-    // This GPU is blacklisted for hardware decoding.
+-    specValues[0] = kCFBooleanFalse;
+-  }
+-  static_assert(std::size(specKeys) == std::size(specValues),
+-                "Non matching keys/values array size");
++  if (__builtin_available(iOS 17.0, *)) {
++    const void* specKeys[] = {
++        kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder};
++    const void* specValues[1];
++    if (gfx::gfxVars::CanUseHardwareVideoDecoding()) {
++      specValues[0] = kCFBooleanTrue;
++    } else {
++      // This GPU is blacklisted for hardware decoding.
++      specValues[0] = kCFBooleanFalse;
++    }
++    static_assert(std::size(specKeys) == std::size(specValues),
++                  "Non matching keys/values array size");
+ 
+-  return CFDictionaryCreate(kCFAllocatorDefault, specKeys, specValues,
+-                            std::size(specKeys), &kCFTypeDictionaryKeyCallBacks,
+-                            &kCFTypeDictionaryValueCallBacks);
++    return CFDictionaryCreate(
++        kCFAllocatorDefault, specKeys, specValues, std::size(specKeys),
++        &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
++  }
++  return nullptr;
+ }
+
+ CFDictionaryRef AppleVTDecoder::CreateOutputConfiguration() {

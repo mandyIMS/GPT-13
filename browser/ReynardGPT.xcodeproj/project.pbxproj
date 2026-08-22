@@ -1,0 +1,1167 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00F4AE8B2AF022396F58C191 /* DateTimePromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09097CEB1DFF4E69534134B2 /* DateTimePromptRequest.swift */; };
+		027FC8ADE620AD19C79EC308 /* ContentBlockingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0CF5FDC1985E2C43D79E29 /* ContentBlockingDelegate.swift */; };
+		0497BDEE5738F5B315729657 /* GPTDownloadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BC87E0161E3BEAE4CE8BE0 /* GPTDownloadStore.swift */; };
+		07352FF134ACE5A10D830F6F /* SharePromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F32820A7936C932F8421D3 /* SharePromptRequest.swift */; };
+		093A9882F5999196EBD76FFF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB97BFEACC37726B6EE473CF /* main.m */; };
+		0A49A8F01C929875FB45BB57 /* GPTDownloadsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52205B200EC69B61D0B2BCC /* GPTDownloadsViewController.swift */; };
+		0B9FA06F167B00B0AC71E2FB /* PromptDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DF979052A842F85E586B93 /* PromptDelegate.swift */; };
+		14CAA8BD661B56F4F8963296 /* Addon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167C0503790AEE861A40E720 /* Addon.swift */; };
+		14D8705A2D1BFCB8E09B4FA4 /* GPTWebsiteDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CEE874080603316A85C30B /* GPTWebsiteDataCleaner.swift */; };
+		187593D2EEEF2F06FB932659 /* GPTSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426CB96D1AFB19AFE8E9E969 /* GPTSelectionController.swift */; };
+		1A1CF673B3DEF8DA29E74750 /* TextPromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499D37F9DDF815EFFD818568 /* TextPromptRequest.swift */; };
+		24875F12A7C5300A27F4958A /* NavigationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD09974F92E6AC005BB342B /* NavigationDelegate.swift */; };
+		296B38D693D8313959853B28 /* AlertPromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2695C2487F99B4183C1721 /* AlertPromptRequest.swift */; };
+		29ED8C4CFBF93EA58D7FC74D /* ContentBlockingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C4C666BE2C062066D860F4 /* ContentBlockingController.swift */; };
+		2A0F9238C6842EB9D3C609A1 /* ContentDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD49D6C326ED511F4546730 /* ContentDelegate.swift */; };
+		2BAB12B18356E2FDBAFF96CC /* HistoryDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7767B740F0861735A039451 /* HistoryDelegate.swift */; };
+		2E9FC3A2E4D8DB78F642D48E /* GeckoSessionSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC57577043A349C4BF07CB3 /* GeckoSessionSettings.swift */; };
+		328888171B63584B04F5BFB9 /* MediaSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFC305F91290427ED65772A4 /* MediaSessionDelegate.swift */; };
+		35993D6572726DA781F5F6F3 /* AddonPermissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D806ED9CFF2FCB004E92825 /* AddonPermissions.swift */; };
+		35FB567F0BDD550C5AB9685C /* ChineseCompositionCaretTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30FF9C1174141138B44E970 /* ChineseCompositionCaretTests.swift */; };
+		37154777A2672CF5729BDA86 /* AddonRuntimeEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A9978CB2B0CEBF22F00C2B /* AddonRuntimeEvents.swift */; };
+		3AA693C9CFC949F7B46BEB36 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E095A6B0DCB782C97FF7AA5 /* Helper.swift */; };
+		3BF4BDCF9F4054C6C97A1705 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 24655F07299A7CF5CA198753 /* Utils.m */; };
+		3C2E3CA746C4F17E99A70948 /* ExtensionBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 20F1F4F4F257155DD51F23AF /* ExtensionBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		43AA2768EE84A425F38E3557 /* PromptResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E09131F2E9C18CCFA82387 /* PromptResponse.swift */; };
+		480775FE2EA4907C8443532F /* PermissionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2F96E999E742032F3B7BE3B /* PermissionDelegate.swift */; };
+		4A7ECE11DBD29A2B652D43B0 /* GPTUserAgentPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF139E41D2207738AE1DB9E /* GPTUserAgentPolicy.swift */; };
+		4FA8C844A162671093CAC838 /* SelectPromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294F224CFB1B672DB0DA2360 /* SelectPromptRequest.swift */; };
+		506DC38FB85E2218FFDCB01E /* GeckoRuntimeBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 6D1AB043068CB768FA6EED0B /* GeckoRuntimeBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		55845E21B63AFB3A2CC1CBD0 /* GPTFilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3295CC44526677433807C6D /* GPTFilePicker.swift */; };
+		5E2C220673857FB563D48D0F /* Reynard Helper.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 467E07C84FBD29C623BFFE14 /* Reynard Helper.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		61045C4A2933EB0B7614D646 /* EventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7DFFE2791BB761C07AE2B9 /* EventDispatcher.swift */; };
+		62F1A1A471CAAA6671DC25B8 /* PayloadValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E81B3827659B766269CE287 /* PayloadValue.swift */; };
+		6345409EAF0B47829B500440 /* GPTNavigationPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E05108A3F2212B1EC2F6A1 /* GPTNavigationPolicy.swift */; };
+		659C9932DAB50FCC94D1899C /* GeckoSessionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91150FB481D377102C92DF68 /* GeckoSessionHandler.swift */; };
+		69ABCEC74967150179DA6774 /* GPTSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607084F14F15001376532C49 /* GPTSettingsViewController.swift */; };
+		69F1042F3D9D87415C21DA41 /* SelectionActionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1719626D4C6CC86E381353E /* SelectionActionDelegate.swift */; };
+		7082033F8F0C16430799235C /* GeckoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6DE2268153A9B724DF484C /* GeckoView.swift */; };
+		752FCD5234CED77809E45021 /* AddonRuntimeCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4F9D32F03462507ACD6FDC /* AddonRuntimeCommands.swift */; };
+		778339D1F9418CAEB5A17265 /* GeckoView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD9B7ACF33ED854A2198EC42 /* GeckoView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7890C63D0668D9FA3B105534 /* FolderUploadPromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C14454519CE9F323FD57BFE /* FolderUploadPromptRequest.swift */; };
+		799BC819FC22193DD977E397 /* PictureInPictureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFC77AF611EC3208C5127E0 /* PictureInPictureDelegate.swift */; };
+		7E450BE331911F17A0C817FA /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = BB09B4CF3BBB6C2A2D4B040A /* Utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		951FCAA7896673DB0D047365 /* GeckoSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18186761E679A6763D86D554 /* GeckoSession.swift */; };
+		98B05953F41EFD774D8BDD94 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79A5023D70DFBCFA0E59E8C /* main.swift */; };
+		99D95BF292F3B64FF5B7EE7C /* ProgressDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B187634BFAE1B844E6F052 /* ProgressDelegate.swift */; };
+		9F139095D59195470C773956 /* SelectionActionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31EE742D7C03BC05C428481E /* SelectionActionRequest.swift */; };
+		A1349BC5F6503390072FCC1D /* GPTJITController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFC001DCCC803BB3900368F /* GPTJITController.swift */; };
+		A423DAE2FA00ADE26DB570CB /* GeckoRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ADFD7BCF60ED797C38B28FA /* GeckoRuntime.swift */; };
+		A597D35FDCE5F136ADE96158 /* AuthPromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F43A49D658F78A78C0BD87C /* AuthPromptRequest.swift */; };
+		A93C2819E262F03835150FA6 /* AddonRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30F5A915AF8CDC70D46752D6 /* AddonRuntime.swift */; };
+		ACF5F4A4E3E0722F87144EDE /* AddonSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F508317FA81B2E1FFFADAA1E /* AddonSession.swift */; };
+		AD5DC121CC27B66C1330E86B /* AddonRuntimeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A8F183BBFD2C1DA204E748 /* AddonRuntimeStore.swift */; };
+		ADA5A1277F0CCC5799BC0693 /* AllowOrDeny.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C07A6E4C0033F74AF0CCB6 /* AllowOrDeny.swift */; };
+		B56A067DA698F845DEDCD62A /* ExtensionBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = AD6AFCF4D4064727AB7D5606 /* ExtensionBridge.mm */; };
+		B7BCA48E897C1C89CE75059F /* GPTSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1570A70104816BD7A10BD64A /* GPTSceneDelegate.swift */; };
+		BA0115497D2C652296B4EB65 /* AddonMetaData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D6BC956A203D3A647E89FA /* AddonMetaData.swift */; };
+		BA2C376E19CC9B1CE913DDC9 /* ButtonPromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0B7676E66F8B1A42C9DF40 /* ButtonPromptRequest.swift */; };
+		BE0332F328C480A15862B948 /* SelectionActionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D790A6B685AD18DDA979FD3E /* SelectionActionParser.swift */; };
+		C02931F9F6174C922EA4F426 /* GeckoStorageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1310ADE761AF7D9F1E27386 /* GeckoStorageController.swift */; };
+		D833460E6C79A08FFECAC70F /* PromptParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D360EE0E540B5733B47BC18 /* PromptParser.swift */; };
+		DB1E66D5D6F94E41F0806EBA /* GPTBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6C3D8C746BEDFADEF2337C /* GPTBrowserViewController.swift */; };
+		DE3CC2D567A9C79515FCEA4D /* ColorPromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4734E7A776B2962847D6F76 /* ColorPromptRequest.swift */; };
+		DE915C91881ABF9FBCAB7B4A /* GeckoRuntimeBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = FB62B06641F662D299C4AF6C /* GeckoRuntimeBridge.mm */; };
+		DFC645612AB81A030065CFA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 745C884D8FD7D4BB614AA846 /* Assets.xcassets */; };
+		E492173D06ACA3F47BD5DE52 /* ContentPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F1F56407E72B86064DDCAB1 /* ContentPermission.swift */; };
+		E79851277660C1DA3952F027 /* GeckoView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD9B7ACF33ED854A2198EC42 /* GeckoView.framework */; };
+		ECFC02A9E631C3EFB8B4E822 /* GeckoView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD9B7ACF33ED854A2198EC42 /* GeckoView.framework */; };
+		EE1AD0CD201AF9F4562E21A5 /* AddonAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22997401C16AF179C272A5F0 /* AddonAction.swift */; };
+		F07BCCFD997089D194915E4F /* FilePickerPromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9664DCCABF8F2DEC6F859761 /* FilePickerPromptRequest.swift */; };
+		F1B9D36BD478D08E39F91AF2 /* PromptRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E78EDC2AB65F7EA71EBE216 /* PromptRequest.swift */; };
+		F303B31BA728E7240FCB95B9 /* AddonEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA49625488691906428065D3 /* AddonEvents.swift */; };
+		F6AE4C3531F7F94CE90F0006 /* GeckoView.h in Headers */ = {isa = PBXBuildFile; fileRef = 11B216BFA845F3C59DAA509B /* GeckoView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F6DF2FD56A9D9975A772D39F /* AddonDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F0322FE3AF2BA6EB62A92C /* AddonDelegate.swift */; };
+		FA69BA05A49FF7D5ACAEA788 /* GeckoAutofillHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E318762DB0D183AA7FC76F38 /* GeckoAutofillHandler.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		34A8E2147BA7354FDC85E5F1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC9D3EA0FC8D6A4FCB388F9F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2A88F1738D7B0484B549BB9D;
+			remoteInfo = GeckoView;
+		};
+		9422124B97F2BEAA5E940F08 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC9D3EA0FC8D6A4FCB388F9F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 17F33FDE51945F94CA9C4426;
+			remoteInfo = ReynardGPT;
+		};
+		B594A4C01ED9246775C2E55D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC9D3EA0FC8D6A4FCB388F9F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2A88F1738D7B0484B549BB9D;
+			remoteInfo = GeckoView;
+		};
+		F870614C01A9946D34433461 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DC9D3EA0FC8D6A4FCB388F9F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9E76659A1B4C2D65AD42E33A;
+			remoteInfo = "Reynard Helper";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1848D8245A148BFC9386780A /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5E2C220673857FB563D48D0F /* Reynard Helper.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		923E183FA7B13421EC17A18B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				778339D1F9418CAEB5A17265 /* GeckoView.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		08A9978CB2B0CEBF22F00C2B /* AddonRuntimeEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonRuntimeEvents.swift; sourceTree = "<group>"; };
+		09097CEB1DFF4E69534134B2 /* DateTimePromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimePromptRequest.swift; sourceTree = "<group>"; };
+		0E095A6B0DCB782C97FF7AA5 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		11B216BFA845F3C59DAA509B /* GeckoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeckoView.h; sourceTree = "<group>"; };
+		1570A70104816BD7A10BD64A /* GPTSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTSceneDelegate.swift; sourceTree = "<group>"; };
+		167C0503790AEE861A40E720 /* Addon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Addon.swift; sourceTree = "<group>"; };
+		18186761E679A6763D86D554 /* GeckoSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeckoSession.swift; sourceTree = "<group>"; };
+		1D360EE0E540B5733B47BC18 /* PromptParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptParser.swift; sourceTree = "<group>"; };
+		20F1F4F4F257155DD51F23AF /* ExtensionBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExtensionBridge.h; sourceTree = "<group>"; };
+		22997401C16AF179C272A5F0 /* AddonAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonAction.swift; sourceTree = "<group>"; };
+		24655F07299A7CF5CA198753 /* Utils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
+		28E05108A3F2212B1EC2F6A1 /* GPTNavigationPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTNavigationPolicy.swift; sourceTree = "<group>"; };
+		294F224CFB1B672DB0DA2360 /* SelectPromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPromptRequest.swift; sourceTree = "<group>"; };
+		2CFC001DCCC803BB3900368F /* GPTJITController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTJITController.swift; sourceTree = "<group>"; };
+		2E6DE2268153A9B724DF484C /* GeckoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeckoView.swift; sourceTree = "<group>"; };
+		2F1F56407E72B86064DDCAB1 /* ContentPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentPermission.swift; sourceTree = "<group>"; };
+		30F5A915AF8CDC70D46752D6 /* AddonRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonRuntime.swift; sourceTree = "<group>"; };
+		31EE742D7C03BC05C428481E /* SelectionActionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionActionRequest.swift; sourceTree = "<group>"; };
+		3C14454519CE9F323FD57BFE /* FolderUploadPromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderUploadPromptRequest.swift; sourceTree = "<group>"; };
+		3D6C3D8C746BEDFADEF2337C /* GPTBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTBrowserViewController.swift; sourceTree = "<group>"; };
+		3E78EDC2AB65F7EA71EBE216 /* PromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptRequest.swift; sourceTree = "<group>"; };
+		426CB96D1AFB19AFE8E9E969 /* GPTSelectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTSelectionController.swift; sourceTree = "<group>"; };
+		467E07C84FBD29C623BFFE14 /* Reynard Helper.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = "Reynard Helper.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		499D37F9DDF815EFFD818568 /* TextPromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextPromptRequest.swift; sourceTree = "<group>"; };
+		4EF139E41D2207738AE1DB9E /* GPTUserAgentPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTUserAgentPolicy.swift; sourceTree = "<group>"; };
+		5D4F9D32F03462507ACD6FDC /* AddonRuntimeCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonRuntimeCommands.swift; sourceTree = "<group>"; };
+		607084F14F15001376532C49 /* GPTSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTSettingsViewController.swift; sourceTree = "<group>"; };
+		68B187634BFAE1B844E6F052 /* ProgressDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressDelegate.swift; sourceTree = "<group>"; };
+		6ADFD7BCF60ED797C38B28FA /* GeckoRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeckoRuntime.swift; sourceTree = "<group>"; };
+		6D1AB043068CB768FA6EED0B /* GeckoRuntimeBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeckoRuntimeBridge.h; sourceTree = "<group>"; };
+		6D806ED9CFF2FCB004E92825 /* AddonPermissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonPermissions.swift; sourceTree = "<group>"; };
+		6F43A49D658F78A78C0BD87C /* AuthPromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPromptRequest.swift; sourceTree = "<group>"; };
+		745C884D8FD7D4BB614AA846 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7AD09974F92E6AC005BB342B /* NavigationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDelegate.swift; sourceTree = "<group>"; };
+		7B0CF5FDC1985E2C43D79E29 /* ContentBlockingDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentBlockingDelegate.swift; sourceTree = "<group>"; };
+		87F32820A7936C932F8421D3 /* SharePromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePromptRequest.swift; sourceTree = "<group>"; };
+		8E81B3827659B766269CE287 /* PayloadValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayloadValue.swift; sourceTree = "<group>"; };
+		91150FB481D377102C92DF68 /* GeckoSessionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeckoSessionHandler.swift; sourceTree = "<group>"; };
+		9664DCCABF8F2DEC6F859761 /* FilePickerPromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePickerPromptRequest.swift; sourceTree = "<group>"; };
+		9F0B7676E66F8B1A42C9DF40 /* ButtonPromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonPromptRequest.swift; sourceTree = "<group>"; };
+		A1310ADE761AF7D9F1E27386 /* GeckoStorageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeckoStorageController.swift; sourceTree = "<group>"; };
+		A1719626D4C6CC86E381353E /* SelectionActionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionActionDelegate.swift; sourceTree = "<group>"; };
+		A30FF9C1174141138B44E970 /* ChineseCompositionCaretTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChineseCompositionCaretTests.swift; sourceTree = "<group>"; };
+		A4DF979052A842F85E586B93 /* PromptDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptDelegate.swift; sourceTree = "<group>"; };
+		A9D6BC956A203D3A647E89FA /* AddonMetaData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonMetaData.swift; sourceTree = "<group>"; };
+		ACD49D6C326ED511F4546730 /* ContentDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentDelegate.swift; sourceTree = "<group>"; };
+		AD6AFCF4D4064727AB7D5606 /* ExtensionBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExtensionBridge.mm; sourceTree = "<group>"; };
+		AF2695C2487F99B4183C1721 /* AlertPromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPromptRequest.swift; sourceTree = "<group>"; };
+		B3C4C666BE2C062066D860F4 /* ContentBlockingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentBlockingController.swift; sourceTree = "<group>"; };
+		BB09B4CF3BBB6C2A2D4B040A /* Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		BB97BFEACC37726B6EE473CF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BDFC77AF611EC3208C5127E0 /* PictureInPictureDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureInPictureDelegate.swift; sourceTree = "<group>"; };
+		BFC57577043A349C4BF07CB3 /* GeckoSessionSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeckoSessionSettings.swift; sourceTree = "<group>"; };
+		C3295CC44526677433807C6D /* GPTFilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTFilePicker.swift; sourceTree = "<group>"; };
+		CF66AABEA349FF22FB04DEAC /* ReynardGPT-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ReynardGPT-Bridging-Header.h"; sourceTree = "<group>"; };
+		D2CEE874080603316A85C30B /* GPTWebsiteDataCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTWebsiteDataCleaner.swift; sourceTree = "<group>"; };
+		D2E09131F2E9C18CCFA82387 /* PromptResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptResponse.swift; sourceTree = "<group>"; };
+		D4734E7A776B2962847D6F76 /* ColorPromptRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPromptRequest.swift; sourceTree = "<group>"; };
+		D52205B200EC69B61D0B2BCC /* GPTDownloadsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTDownloadsViewController.swift; sourceTree = "<group>"; };
+		D790A6B685AD18DDA979FD3E /* SelectionActionParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionActionParser.swift; sourceTree = "<group>"; };
+		D9F0322FE3AF2BA6EB62A92C /* AddonDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonDelegate.swift; sourceTree = "<group>"; };
+		DFC305F91290427ED65772A4 /* MediaSessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSessionDelegate.swift; sourceTree = "<group>"; };
+		E318762DB0D183AA7FC76F38 /* GeckoAutofillHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeckoAutofillHandler.swift; sourceTree = "<group>"; };
+		E79A5023D70DFBCFA0E59E8C /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		E9A8F183BBFD2C1DA204E748 /* AddonRuntimeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonRuntimeStore.swift; sourceTree = "<group>"; };
+		EA49625488691906428065D3 /* AddonEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonEvents.swift; sourceTree = "<group>"; };
+		ECAD16F63C917D14AE579E7A /* Reynard.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Reynard.xcconfig; sourceTree = "<group>"; };
+		EE7DFFE2791BB761C07AE2B9 /* EventDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDispatcher.swift; sourceTree = "<group>"; };
+		F2F96E999E742032F3B7BE3B /* PermissionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionDelegate.swift; sourceTree = "<group>"; };
+		F508317FA81B2E1FFFADAA1E /* AddonSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddonSession.swift; sourceTree = "<group>"; };
+		F6B6CF6262E04EBA29D3F97E /* ReynardGPTUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ReynardGPTUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7767B740F0861735A039451 /* HistoryDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryDelegate.swift; sourceTree = "<group>"; };
+		F7BC87E0161E3BEAE4CE8BE0 /* GPTDownloadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTDownloadStore.swift; sourceTree = "<group>"; };
+		F8C07A6E4C0033F74AF0CCB6 /* AllowOrDeny.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllowOrDeny.swift; sourceTree = "<group>"; };
+		FB62B06641F662D299C4AF6C /* GeckoRuntimeBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GeckoRuntimeBridge.mm; sourceTree = "<group>"; };
+		FD57954371D3C54D659D7271 /* ReynardGPT.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ReynardGPT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD9B7ACF33ED854A2198EC42 /* GeckoView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GeckoView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6AB1BC601081F68BF1BD7AFC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E79851277660C1DA3952F027 /* GeckoView.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8E50B73A4D8B66799192E25 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ECFC02A9E631C3EFB8B4E822 /* GeckoView.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1F62190F68C1DB3D3B719E0E /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				7B0CF5FDC1985E2C43D79E29 /* ContentBlockingDelegate.swift */,
+				ACD49D6C326ED511F4546730 /* ContentDelegate.swift */,
+				F7767B740F0861735A039451 /* HistoryDelegate.swift */,
+				DFC305F91290427ED65772A4 /* MediaSessionDelegate.swift */,
+				7AD09974F92E6AC005BB342B /* NavigationDelegate.swift */,
+				F2F96E999E742032F3B7BE3B /* PermissionDelegate.swift */,
+				BDFC77AF611EC3208C5127E0 /* PictureInPictureDelegate.swift */,
+				68B187634BFAE1B844E6F052 /* ProgressDelegate.swift */,
+				A4DF979052A842F85E586B93 /* PromptDelegate.swift */,
+				A1719626D4C6CC86E381353E /* SelectionActionDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		24D9B1AF0021F63D4E09FC61 /* JIT */ = {
+			isa = PBXGroup;
+			children = (
+				2CFC001DCCC803BB3900368F /* GPTJITController.swift */,
+			);
+			path = JIT;
+			sourceTree = "<group>";
+		};
+		2B1C4AAD4D39632DA8818107 /* Reynard */ = {
+			isa = PBXGroup;
+			children = (
+				BC06757F4FBF7AD93A5DFA7C /* Shared */,
+			);
+			path = Reynard;
+			sourceTree = "<group>";
+		};
+		2F1CA3D4D21BFB1B87378154 /* Bridging */ = {
+			isa = PBXGroup;
+			children = (
+				CF66AABEA349FF22FB04DEAC /* ReynardGPT-Bridging-Header.h */,
+			);
+			path = Bridging;
+			sourceTree = "<group>";
+		};
+		330721E2AF46C42B676F65E7 /* Runtime */ = {
+			isa = PBXGroup;
+			children = (
+				6ADFD7BCF60ED797C38B28FA /* GeckoRuntime.swift */,
+				6D1AB043068CB768FA6EED0B /* GeckoRuntimeBridge.h */,
+				FB62B06641F662D299C4AF6C /* GeckoRuntimeBridge.mm */,
+			);
+			path = Runtime;
+			sourceTree = "<group>";
+		};
+		3634A6B14AEEBD7881AA64E9 /* GeckoView */ = {
+			isa = PBXGroup;
+			children = (
+				CEB06FEDDE63077E0AFE18C0 /* Addons */,
+				D97723DEA93707E68FAB8851 /* Controllers */,
+				1F62190F68C1DB3D3B719E0E /* Delegates */,
+				E5DBB0F896EC7CC4B67962F4 /* Events */,
+				465C0A6AF0D271D04CDE779B /* Prompts */,
+				330721E2AF46C42B676F65E7 /* Runtime */,
+				62DF27F8D57CEA2B48BDCB78 /* Session */,
+				40454A5D40D0ACCA791B8D5E /* Support */,
+				7983310EEC9D73EE74247951 /* View */,
+			);
+			path = GeckoView;
+			sourceTree = "<group>";
+		};
+		3EADE22D3C961CE74F95721B /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				B44F0783CE08508F3E875314 /* ReynardGPTUITests */,
+			);
+			path = tests;
+			sourceTree = "<group>";
+		};
+		40454A5D40D0ACCA791B8D5E /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				F8C07A6E4C0033F74AF0CCB6 /* AllowOrDeny.swift */,
+				2F1F56407E72B86064DDCAB1 /* ContentPermission.swift */,
+				8E81B3827659B766269CE287 /* PayloadValue.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		42EED2DCEF15078979ED62BD /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				20F1F4F4F257155DD51F23AF /* ExtensionBridge.h */,
+				AD6AFCF4D4064727AB7D5606 /* ExtensionBridge.mm */,
+				0E095A6B0DCB782C97FF7AA5 /* Helper.swift */,
+				BB97BFEACC37726B6EE473CF /* main.m */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		465C0A6AF0D271D04CDE779B /* Prompts */ = {
+			isa = PBXGroup;
+			children = (
+				1D360EE0E540B5733B47BC18 /* PromptParser.swift */,
+				3E78EDC2AB65F7EA71EBE216 /* PromptRequest.swift */,
+				D2E09131F2E9C18CCFA82387 /* PromptResponse.swift */,
+				4C6A90037F1D51F29B55C180 /* PromptRequests */,
+			);
+			path = Prompts;
+			sourceTree = "<group>";
+		};
+		4C6A90037F1D51F29B55C180 /* PromptRequests */ = {
+			isa = PBXGroup;
+			children = (
+				AF2695C2487F99B4183C1721 /* AlertPromptRequest.swift */,
+				6F43A49D658F78A78C0BD87C /* AuthPromptRequest.swift */,
+				9F0B7676E66F8B1A42C9DF40 /* ButtonPromptRequest.swift */,
+				D4734E7A776B2962847D6F76 /* ColorPromptRequest.swift */,
+				09097CEB1DFF4E69534134B2 /* DateTimePromptRequest.swift */,
+				9664DCCABF8F2DEC6F859761 /* FilePickerPromptRequest.swift */,
+				3C14454519CE9F323FD57BFE /* FolderUploadPromptRequest.swift */,
+				294F224CFB1B672DB0DA2360 /* SelectPromptRequest.swift */,
+				87F32820A7936C932F8421D3 /* SharePromptRequest.swift */,
+				499D37F9DDF815EFFD818568 /* TextPromptRequest.swift */,
+			);
+			path = PromptRequests;
+			sourceTree = "<group>";
+		};
+		5A286CA31365259D2A98B9FB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FD9B7ACF33ED854A2198EC42 /* GeckoView.framework */,
+				467E07C84FBD29C623BFFE14 /* Reynard Helper.appex */,
+				FD57954371D3C54D659D7271 /* ReynardGPT.app */,
+				F6B6CF6262E04EBA29D3F97E /* ReynardGPTUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		62DF27F8D57CEA2B48BDCB78 /* Session */ = {
+			isa = PBXGroup;
+			children = (
+				E318762DB0D183AA7FC76F38 /* GeckoAutofillHandler.swift */,
+				18186761E679A6763D86D554 /* GeckoSession.swift */,
+				91150FB481D377102C92DF68 /* GeckoSessionHandler.swift */,
+				BFC57577043A349C4BF07CB3 /* GeckoSessionSettings.swift */,
+			);
+			path = Session;
+			sourceTree = "<group>";
+		};
+		7983310EEC9D73EE74247951 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				11B216BFA845F3C59DAA509B /* GeckoView.h */,
+				2E6DE2268153A9B724DF484C /* GeckoView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		804B9FD60433A8784450276D /* reynard-browser */ = {
+			isa = PBXGroup;
+			children = (
+				3EADE22D3C961CE74F95721B /* tests */,
+			);
+			name = "reynard-browser";
+			path = ..;
+			sourceTree = "<group>";
+		};
+		9450326FDA794F5EBDF651B6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				745C884D8FD7D4BB614AA846 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A33EF7ABBF6DED9345E429F5 = {
+			isa = PBXGroup;
+			children = (
+				A52AB3A3F184E491292C4D64 /* Configuration */,
+				3634A6B14AEEBD7881AA64E9 /* GeckoView */,
+				42EED2DCEF15078979ED62BD /* Helper */,
+				2B1C4AAD4D39632DA8818107 /* Reynard */,
+				804B9FD60433A8784450276D /* reynard-browser */,
+				EE74312A2AAE9868212FDD70 /* ReynardGPT */,
+				5A286CA31365259D2A98B9FB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A52AB3A3F184E491292C4D64 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				ECAD16F63C917D14AE579E7A /* Reynard.xcconfig */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		B44F0783CE08508F3E875314 /* ReynardGPTUITests */ = {
+			isa = PBXGroup;
+			children = (
+				A30FF9C1174141138B44E970 /* ChineseCompositionCaretTests.swift */,
+			);
+			path = ReynardGPTUITests;
+			sourceTree = "<group>";
+		};
+		BC06757F4FBF7AD93A5DFA7C /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				BB09B4CF3BBB6C2A2D4B040A /* Utils.h */,
+				24655F07299A7CF5CA198753 /* Utils.m */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		CEB06FEDDE63077E0AFE18C0 /* Addons */ = {
+			isa = PBXGroup;
+			children = (
+				167C0503790AEE861A40E720 /* Addon.swift */,
+				22997401C16AF179C272A5F0 /* AddonAction.swift */,
+				D9F0322FE3AF2BA6EB62A92C /* AddonDelegate.swift */,
+				EA49625488691906428065D3 /* AddonEvents.swift */,
+				A9D6BC956A203D3A647E89FA /* AddonMetaData.swift */,
+				6D806ED9CFF2FCB004E92825 /* AddonPermissions.swift */,
+				30F5A915AF8CDC70D46752D6 /* AddonRuntime.swift */,
+				5D4F9D32F03462507ACD6FDC /* AddonRuntimeCommands.swift */,
+				08A9978CB2B0CEBF22F00C2B /* AddonRuntimeEvents.swift */,
+				E9A8F183BBFD2C1DA204E748 /* AddonRuntimeStore.swift */,
+				F508317FA81B2E1FFFADAA1E /* AddonSession.swift */,
+			);
+			path = Addons;
+			sourceTree = "<group>";
+		};
+		D660BC24A1D1B7AAB129DB20 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				3D6C3D8C746BEDFADEF2337C /* GPTBrowserViewController.swift */,
+				D52205B200EC69B61D0B2BCC /* GPTDownloadsViewController.swift */,
+				C3295CC44526677433807C6D /* GPTFilePicker.swift */,
+				1570A70104816BD7A10BD64A /* GPTSceneDelegate.swift */,
+				426CB96D1AFB19AFE8E9E969 /* GPTSelectionController.swift */,
+				607084F14F15001376532C49 /* GPTSettingsViewController.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D97723DEA93707E68FAB8851 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				B3C4C666BE2C062066D860F4 /* ContentBlockingController.swift */,
+				A1310ADE761AF7D9F1E27386 /* GeckoStorageController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		E5DBB0F896EC7CC4B67962F4 /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				EE7DFFE2791BB761C07AE2B9 /* EventDispatcher.swift */,
+				D790A6B685AD18DDA979FD3E /* SelectionActionParser.swift */,
+				31EE742D7C03BC05C428481E /* SelectionActionRequest.swift */,
+			);
+			path = Events;
+			sourceTree = "<group>";
+		};
+		EE74312A2AAE9868212FDD70 /* ReynardGPT */ = {
+			isa = PBXGroup;
+			children = (
+				E79A5023D70DFBCFA0E59E8C /* main.swift */,
+				D660BC24A1D1B7AAB129DB20 /* App */,
+				2F1CA3D4D21BFB1B87378154 /* Bridging */,
+				FB99F034CCC04D151588837D /* Core */,
+				24D9B1AF0021F63D4E09FC61 /* JIT */,
+				9450326FDA794F5EBDF651B6 /* Resources */,
+			);
+			path = ReynardGPT;
+			sourceTree = "<group>";
+		};
+		FB99F034CCC04D151588837D /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				F7BC87E0161E3BEAE4CE8BE0 /* GPTDownloadStore.swift */,
+				28E05108A3F2212B1EC2F6A1 /* GPTNavigationPolicy.swift */,
+				4EF139E41D2207738AE1DB9E /* GPTUserAgentPolicy.swift */,
+				D2CEE874080603316A85C30B /* GPTWebsiteDataCleaner.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		4179A94F70A7CC0D087AB968 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3C2E3CA746C4F17E99A70948 /* ExtensionBridge.h in Headers */,
+				506DC38FB85E2218FFDCB01E /* GeckoRuntimeBridge.h in Headers */,
+				F6AE4C3531F7F94CE90F0006 /* GeckoView.h in Headers */,
+				7E450BE331911F17A0C817FA /* Utils.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		17F33FDE51945F94CA9C4426 /* ReynardGPT */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 97369869ABFDDCF1A5BCBF8C /* Build configuration list for PBXNativeTarget "ReynardGPT" */;
+			buildPhases = (
+				AD15C8DD6AF2F738BEED5073 /* Sources */,
+				3F4422C2D1EC211AC310A65E /* Resources */,
+				F8E50B73A4D8B66799192E25 /* Frameworks */,
+				1848D8245A148BFC9386780A /* Embed Foundation Extensions */,
+				923E183FA7B13421EC17A18B /* Embed Frameworks */,
+				4FFFA006D8C00074DDF64F58 /* Copy Gecko Runtime */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B948322664C17908213230EE /* PBXTargetDependency */,
+				5108B9E2D2CE9099A94E0830 /* PBXTargetDependency */,
+			);
+			name = ReynardGPT;
+			packageProductDependencies = (
+			);
+			productName = ReynardGPT;
+			productReference = FD57954371D3C54D659D7271 /* ReynardGPT.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2A88F1738D7B0484B549BB9D /* GeckoView */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BF0FD612BF1B69E2F6B6EF13 /* Build configuration list for PBXNativeTarget "GeckoView" */;
+			buildPhases = (
+				4179A94F70A7CC0D087AB968 /* Headers */,
+				2669438D9F30F39155A4179A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GeckoView;
+			packageProductDependencies = (
+			);
+			productName = GeckoView;
+			productReference = FD9B7ACF33ED854A2198EC42 /* GeckoView.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		9E76659A1B4C2D65AD42E33A /* Reynard Helper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5781E92258B1BFBEA780389F /* Build configuration list for PBXNativeTarget "Reynard Helper" */;
+			buildPhases = (
+				C6883CBD722A29BCC6BB22FA /* Sources */,
+				6AB1BC601081F68BF1BD7AFC /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1627A1EF7B951564606119BE /* PBXTargetDependency */,
+			);
+			name = "Reynard Helper";
+			packageProductDependencies = (
+			);
+			productName = "Reynard Helper";
+			productReference = 467E07C84FBD29C623BFFE14 /* Reynard Helper.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		DDCACC90857586BE6F5A991E /* ReynardGPTUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4BF80658D48BE2AE4EE87B70 /* Build configuration list for PBXNativeTarget "ReynardGPTUITests" */;
+			buildPhases = (
+				0E976CEEA9862ACDFC89F7B0 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3A07CA391B420CEA4B00CE8A /* PBXTargetDependency */,
+			);
+			name = ReynardGPTUITests;
+			packageProductDependencies = (
+			);
+			productName = ReynardGPTUITests;
+			productReference = F6B6CF6262E04EBA29D3F97E /* ReynardGPTUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DC9D3EA0FC8D6A4FCB388F9F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					17F33FDE51945F94CA9C4426 = {
+						ProvisioningStyle = Manual;
+					};
+					2A88F1738D7B0484B549BB9D = {
+						ProvisioningStyle = Manual;
+					};
+					9E76659A1B4C2D65AD42E33A = {
+						ProvisioningStyle = Manual;
+					};
+					DDCACC90857586BE6F5A991E = {
+						TestTargetID = 17F33FDE51945F94CA9C4426;
+					};
+				};
+			};
+			buildConfigurationList = 29B5DCCDA27ABE6B3B8B8DC4 /* Build configuration list for PBXProject "ReynardGPT" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = A33EF7ABBF6DED9345E429F5;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 5A286CA31365259D2A98B9FB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2A88F1738D7B0484B549BB9D /* GeckoView */,
+				9E76659A1B4C2D65AD42E33A /* Reynard Helper */,
+				17F33FDE51945F94CA9C4426 /* ReynardGPT */,
+				DDCACC90857586BE6F5A991E /* ReynardGPTUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3F4422C2D1EC211AC310A65E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DFC645612AB81A030065CFA5 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4FFFA006D8C00074DDF64F58 /* Copy Gecko Runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Gecko Runtime";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "sh \"${SRCROOT}/Scripts/AddGecko.sh\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0E976CEEA9862ACDFC89F7B0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				35FB567F0BDD550C5AB9685C /* ChineseCompositionCaretTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2669438D9F30F39155A4179A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				14CAA8BD661B56F4F8963296 /* Addon.swift in Sources */,
+				EE1AD0CD201AF9F4562E21A5 /* AddonAction.swift in Sources */,
+				F6DF2FD56A9D9975A772D39F /* AddonDelegate.swift in Sources */,
+				F303B31BA728E7240FCB95B9 /* AddonEvents.swift in Sources */,
+				BA0115497D2C652296B4EB65 /* AddonMetaData.swift in Sources */,
+				35993D6572726DA781F5F6F3 /* AddonPermissions.swift in Sources */,
+				A93C2819E262F03835150FA6 /* AddonRuntime.swift in Sources */,
+				752FCD5234CED77809E45021 /* AddonRuntimeCommands.swift in Sources */,
+				37154777A2672CF5729BDA86 /* AddonRuntimeEvents.swift in Sources */,
+				AD5DC121CC27B66C1330E86B /* AddonRuntimeStore.swift in Sources */,
+				ACF5F4A4E3E0722F87144EDE /* AddonSession.swift in Sources */,
+				296B38D693D8313959853B28 /* AlertPromptRequest.swift in Sources */,
+				ADA5A1277F0CCC5799BC0693 /* AllowOrDeny.swift in Sources */,
+				A597D35FDCE5F136ADE96158 /* AuthPromptRequest.swift in Sources */,
+				BA2C376E19CC9B1CE913DDC9 /* ButtonPromptRequest.swift in Sources */,
+				DE3CC2D567A9C79515FCEA4D /* ColorPromptRequest.swift in Sources */,
+				29ED8C4CFBF93EA58D7FC74D /* ContentBlockingController.swift in Sources */,
+				027FC8ADE620AD19C79EC308 /* ContentBlockingDelegate.swift in Sources */,
+				2A0F9238C6842EB9D3C609A1 /* ContentDelegate.swift in Sources */,
+				E492173D06ACA3F47BD5DE52 /* ContentPermission.swift in Sources */,
+				00F4AE8B2AF022396F58C191 /* DateTimePromptRequest.swift in Sources */,
+				61045C4A2933EB0B7614D646 /* EventDispatcher.swift in Sources */,
+				B56A067DA698F845DEDCD62A /* ExtensionBridge.mm in Sources */,
+				F07BCCFD997089D194915E4F /* FilePickerPromptRequest.swift in Sources */,
+				7890C63D0668D9FA3B105534 /* FolderUploadPromptRequest.swift in Sources */,
+				FA69BA05A49FF7D5ACAEA788 /* GeckoAutofillHandler.swift in Sources */,
+				A423DAE2FA00ADE26DB570CB /* GeckoRuntime.swift in Sources */,
+				DE915C91881ABF9FBCAB7B4A /* GeckoRuntimeBridge.mm in Sources */,
+				951FCAA7896673DB0D047365 /* GeckoSession.swift in Sources */,
+				659C9932DAB50FCC94D1899C /* GeckoSessionHandler.swift in Sources */,
+				2E9FC3A2E4D8DB78F642D48E /* GeckoSessionSettings.swift in Sources */,
+				C02931F9F6174C922EA4F426 /* GeckoStorageController.swift in Sources */,
+				7082033F8F0C16430799235C /* GeckoView.swift in Sources */,
+				2BAB12B18356E2FDBAFF96CC /* HistoryDelegate.swift in Sources */,
+				328888171B63584B04F5BFB9 /* MediaSessionDelegate.swift in Sources */,
+				24875F12A7C5300A27F4958A /* NavigationDelegate.swift in Sources */,
+				62F1A1A471CAAA6671DC25B8 /* PayloadValue.swift in Sources */,
+				480775FE2EA4907C8443532F /* PermissionDelegate.swift in Sources */,
+				799BC819FC22193DD977E397 /* PictureInPictureDelegate.swift in Sources */,
+				99D95BF292F3B64FF5B7EE7C /* ProgressDelegate.swift in Sources */,
+				0B9FA06F167B00B0AC71E2FB /* PromptDelegate.swift in Sources */,
+				D833460E6C79A08FFECAC70F /* PromptParser.swift in Sources */,
+				F1B9D36BD478D08E39F91AF2 /* PromptRequest.swift in Sources */,
+				43AA2768EE84A425F38E3557 /* PromptResponse.swift in Sources */,
+				4FA8C844A162671093CAC838 /* SelectPromptRequest.swift in Sources */,
+				69F1042F3D9D87415C21DA41 /* SelectionActionDelegate.swift in Sources */,
+				BE0332F328C480A15862B948 /* SelectionActionParser.swift in Sources */,
+				9F139095D59195470C773956 /* SelectionActionRequest.swift in Sources */,
+				07352FF134ACE5A10D830F6F /* SharePromptRequest.swift in Sources */,
+				1A1CF673B3DEF8DA29E74750 /* TextPromptRequest.swift in Sources */,
+				3BF4BDCF9F4054C6C97A1705 /* Utils.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD15C8DD6AF2F738BEED5073 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB1E66D5D6F94E41F0806EBA /* GPTBrowserViewController.swift in Sources */,
+				0497BDEE5738F5B315729657 /* GPTDownloadStore.swift in Sources */,
+				0A49A8F01C929875FB45BB57 /* GPTDownloadsViewController.swift in Sources */,
+				55845E21B63AFB3A2CC1CBD0 /* GPTFilePicker.swift in Sources */,
+				A1349BC5F6503390072FCC1D /* GPTJITController.swift in Sources */,
+				6345409EAF0B47829B500440 /* GPTNavigationPolicy.swift in Sources */,
+				B7BCA48E897C1C89CE75059F /* GPTSceneDelegate.swift in Sources */,
+				187593D2EEEF2F06FB932659 /* GPTSelectionController.swift in Sources */,
+				69ABCEC74967150179DA6774 /* GPTSettingsViewController.swift in Sources */,
+				4A7ECE11DBD29A2B652D43B0 /* GPTUserAgentPolicy.swift in Sources */,
+				14D8705A2D1BFCB8E09B4FA4 /* GPTWebsiteDataCleaner.swift in Sources */,
+				98B05953F41EFD774D8BDD94 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C6883CBD722A29BCC6BB22FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AA693C9CFC949F7B46BEB36 /* Helper.swift in Sources */,
+				093A9882F5999196EBD76FFF /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1627A1EF7B951564606119BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2A88F1738D7B0484B549BB9D /* GeckoView */;
+			targetProxy = 34A8E2147BA7354FDC85E5F1 /* PBXContainerItemProxy */;
+		};
+		3A07CA391B420CEA4B00CE8A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 17F33FDE51945F94CA9C4426 /* ReynardGPT */;
+			targetProxy = 9422124B97F2BEAA5E940F08 /* PBXContainerItemProxy */;
+		};
+		5108B9E2D2CE9099A94E0830 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9E76659A1B4C2D65AD42E33A /* Reynard Helper */;
+			targetProxy = F870614C01A9946D34433461 /* PBXContainerItemProxy */;
+		};
+		B948322664C17908213230EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2A88F1738D7B0484B549BB9D /* GeckoView */;
+			targetProxy = B594A4C01ED9246775C2E55D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		020100793FF0DC576105B1C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ECAD16F63C917D14AE579E7A /* Reynard.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = GeckoView/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/Frameworks/GeckoView.framework",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(GECKO_DIST)/bin/XUL",
+					"-lmozglue",
+					"-lnss3",
+					"-lfreebl3",
+					"-lsoftokn3",
+					"-llgpllibs",
+					"-lmozavcodec",
+					"-lmozavutil",
+					"-lgkcodecs",
+					"-lmozinference",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkleissjl.gpt13.geckoview;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(PRODUCT_MODULE_NAME)-Swift.h";
+			};
+			name = Release;
+		};
+		055134FFB84A02291F0BCA51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkleissjl.gpt13.uitests;
+				PRODUCT_NAME = ReynardGPTUITests;
+				TEST_TARGET_NAME = ReynardGPT;
+			};
+			name = Debug;
+		};
+		1C8A89A7BC7A7D6EB2242396 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ECAD16F63C917D14AE579E7A /* Reynard.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = "$(CURRENT_BUILD)";
+				INFOPLIST_FILE = Helper/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../Frameworks/GeckoView.framework",
+					"@loader_path/../../Frameworks/GeckoView.framework",
+				);
+				MARKETING_VERSION = "$(CURRENT_VERSION)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(GECKO_DIST)/bin/XUL",
+					"-lmozglue",
+					"-lnss3",
+					"-lfreebl3",
+					"-lsoftokn3",
+					"-llgpllibs",
+					"-lmozavcodec",
+					"-lmozavutil",
+					"-lgkcodecs",
+					"-lmozinference",
+					"-Wl,-u,_NSExtensionMain",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkleissjl.gpt13.helper;
+				PRODUCT_NAME = "Reynard Helper";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ReynardGPT/Bridging/ReynardGPT-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		1F520CED19E4F2AC194E1CBC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				ENABLE_BITCODE = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		336B014036BEF120F5C3D6DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ECAD16F63C917D14AE579E7A /* Reynard.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = "$(CURRENT_BUILD)";
+				INFOPLIST_FILE = Helper/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../Frameworks/GeckoView.framework",
+					"@loader_path/../../Frameworks/GeckoView.framework",
+				);
+				MARKETING_VERSION = "$(CURRENT_VERSION)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(GECKO_DIST)/bin/XUL",
+					"-lmozglue",
+					"-lnss3",
+					"-lfreebl3",
+					"-lsoftokn3",
+					"-llgpllibs",
+					"-lmozavcodec",
+					"-lmozavutil",
+					"-lgkcodecs",
+					"-lmozinference",
+					"-Wl,-u,_NSExtensionMain",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkleissjl.gpt13.helper;
+				PRODUCT_NAME = "Reynard Helper";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ReynardGPT/Bridging/ReynardGPT-Bridging-Header.h";
+			};
+			name = Debug;
+		};
+		350EC17F7645D8CA7F684EDB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkleissjl.gpt13.uitests;
+				PRODUCT_NAME = ReynardGPTUITests;
+				TEST_TARGET_NAME = ReynardGPT;
+			};
+			name = Release;
+		};
+		4851A22974687FFFA6F43B96 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ECAD16F63C917D14AE579E7A /* Reynard.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = GeckoView/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/Frameworks/GeckoView.framework",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(GECKO_DIST)/bin/XUL",
+					"-lmozglue",
+					"-lnss3",
+					"-lfreebl3",
+					"-lsoftokn3",
+					"-llgpllibs",
+					"-lmozavcodec",
+					"-lmozavutil",
+					"-lgkcodecs",
+					"-lmozinference",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkleissjl.gpt13.geckoview;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_INSTALL_OBJC_HEADER = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(PRODUCT_MODULE_NAME)-Swift.h";
+			};
+			name = Debug;
+		};
+		9180A879C77F19DFFD5C8BE8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ECAD16F63C917D14AE579E7A /* Reynard.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/ReynardGPT/Entitlements/ReynardGPT.entitlements";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = "$(CURRENT_BUILD)";
+				INFOPLIST_FILE = ReynardGPT/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/Frameworks/GeckoView.framework",
+				);
+				MARKETING_VERSION = "$(CURRENT_VERSION)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(GECKO_DIST)/bin/XUL",
+					"-lmozglue",
+					"-lnss3",
+					"-lfreebl3",
+					"-lsoftokn3",
+					"-llgpllibs",
+					"-lmozavcodec",
+					"-lmozavutil",
+					"-lgkcodecs",
+					"-lmozinference",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkleissjl.gpt13;
+				PRODUCT_NAME = ReynardGPT;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ReynardGPT/Bridging/ReynardGPT-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		9EE988CA73F2B94A19D0E2E3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				ENABLE_BITCODE = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		DABAF9988C848AAFEB77EFAB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ECAD16F63C917D14AE579E7A /* Reynard.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/ReynardGPT/Entitlements/ReynardGPT.entitlements";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = "$(CURRENT_BUILD)";
+				INFOPLIST_FILE = ReynardGPT/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/Frameworks/GeckoView.framework",
+				);
+				MARKETING_VERSION = "$(CURRENT_VERSION)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(GECKO_DIST)/bin/XUL",
+					"-lmozglue",
+					"-lnss3",
+					"-lfreebl3",
+					"-lsoftokn3",
+					"-llgpllibs",
+					"-lmozavcodec",
+					"-lmozavutil",
+					"-lgkcodecs",
+					"-lmozinference",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jkleissjl.gpt13;
+				PRODUCT_NAME = ReynardGPT;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ReynardGPT/Bridging/ReynardGPT-Bridging-Header.h";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		29B5DCCDA27ABE6B3B8B8DC4 /* Build configuration list for PBXProject "ReynardGPT" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F520CED19E4F2AC194E1CBC /* Debug */,
+				9EE988CA73F2B94A19D0E2E3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		4BF80658D48BE2AE4EE87B70 /* Build configuration list for PBXNativeTarget "ReynardGPTUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				055134FFB84A02291F0BCA51 /* Debug */,
+				350EC17F7645D8CA7F684EDB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5781E92258B1BFBEA780389F /* Build configuration list for PBXNativeTarget "Reynard Helper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				336B014036BEF120F5C3D6DC /* Debug */,
+				1C8A89A7BC7A7D6EB2242396 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		97369869ABFDDCF1A5BCBF8C /* Build configuration list for PBXNativeTarget "ReynardGPT" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DABAF9988C848AAFEB77EFAB /* Debug */,
+				9180A879C77F19DFFD5C8BE8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BF0FD612BF1B69E2F6B6EF13 /* Build configuration list for PBXNativeTarget "GeckoView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4851A22974687FFFA6F43B96 /* Debug */,
+				020100793FF0DC576105B1C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DC9D3EA0FC8D6A4FCB388F9F /* Project object */;
+}

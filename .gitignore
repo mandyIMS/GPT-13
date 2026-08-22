@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# VSCode
+.vscode
+
+# Xcode
+*.xcuserstate
+project.xcworkspace/
+xcuserdata/
+
+# AI agent stuff
+AGENTS.md
+
+# Build artifacts
+.build-cache/
+dist/
+browser/Reynard/JIT/RPPairing/libidevice_ffi.a

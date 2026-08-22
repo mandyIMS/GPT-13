@@ -1,0 +1,33 @@
+diff --git a/ipc/chromium/src/chrome/common/ipc_channel_mach.cc b/ipc/chromium/src/chrome/common/ipc_channel_mach.cc
+index 68d1b07ba51d..77d783ee0db3 100644
+--- a/ipc/chromium/src/chrome/common/ipc_channel_mach.cc
++++ b/ipc/chromium/src/chrome/common/ipc_channel_mach.cc
+@@ -5,7 +5,17 @@
+ #include "ipc_channel_mach.h"
+
+ #include <mach/mach.h>
+-#include <sys/fileport.h>
++#if __has_include(<sys/fileport.h>)
++#  include <sys/fileport.h>
++#else
++// Xcode 15 no longer ships this private header for iPhoneOS, although the
++// libSystem symbols remain available and are required to transfer file
++// descriptors through Mach IPC.
++extern "C" {
++int fileport_makefd(mach_port_t port);
++kern_return_t fileport_makeport(int fd, mach_port_t* port);
++}
++#endif
+
+ #ifdef XP_MACOSX
+ #  include <bsm/libbsm.h>
+@@ -756,8 +766,7 @@ bool ChannelMach::IsValidHandle(const ChannelHandle& handle) {
+           std::get_if<mozilla::UniqueMachReceiveRight>(&handle)) {
+     return !!*server;
+   }
+-  if (const auto* client =
+-          std::get_if<mozilla::UniqueMachReceiveRight>(&handle)) {
++  if (const auto* client = std::get_if<mozilla::UniqueMachSendRight>(&handle)) {
+     return !!*client;
+   }
+   return false;

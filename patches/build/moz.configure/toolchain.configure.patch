@@ -1,0 +1,22 @@
+diff --git a/build/moz.configure/toolchain.configure b/build/moz.configure/toolchain.configure
+index 9ec63f476407..5fc459f9ee89 100644
+--- a/build/moz.configure/toolchain.configure
++++ b/build/moz.configure/toolchain.configure
+@@ -252,7 +252,7 @@ with only_when(host_is_osx | target_is_osx):
+     )
+ 
+     def mac_sdk_min_version():
+-        return "26.5"
++        return "14.2"
+ 
+     @depends(
+         "--with-macos-sdk",
+@@ -356,7 +356,7 @@ with only_when(target_is_ios):
+     set_config("IPHONEOS_IS_SIMULATOR", target_is_ios_simulator)
+ 
+     def ios_sdk_min_version():
+-        return "18.4"
++        return "17.2"
+ 
+     @depends(target_is_ios_simulator)
+     def ios_sdk_name(target_is_ios_simulator):

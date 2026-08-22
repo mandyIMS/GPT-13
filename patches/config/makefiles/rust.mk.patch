@@ -1,0 +1,20 @@
+diff --git a/config/makefiles/rust.mk b/config/makefiles/rust.mk
+index 359d9fd4b29a..3f20a45e7462 100644
+--- a/config/makefiles/rust.mk
++++ b/config/makefiles/rust.mk
+@@ -108,6 +108,7 @@ endif
+ # These flags are passed via `cargo rustc` and only apply to the final rustc
+ # invocation (i.e., only the top-level crate, not its dependencies).
+ cargo_rustc_flags = $(CARGO_RUSTCFLAGS)
++ifndef REYNARD_DISABLE_RUST_LTO
+ ifndef DEVELOPER_OPTIONS
+ ifndef MOZ_DEBUG_RUST
+ # Enable link-time optimization for release builds, but not when linking
+@@ -128,6 +129,7 @@ endif
+ endif
+ endif
+ endif
++endif
+ 
+ ifdef CARGO_INCREMENTAL
+ export CARGO_INCREMENTAL

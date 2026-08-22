@@ -1,0 +1,13 @@
+diff --git a/js/src/irregexp/imported/regexp-bytecodes-inl.h b/js/src/irregexp/imported/regexp-bytecodes-inl.h
+index 1bea17d0..130d716d 100644
+--- a/js/src/irregexp/imported/regexp-bytecodes-inl.h
++++ b/js/src/irregexp/imported/regexp-bytecodes-inl.h
+@@ -79,7 +79,7 @@ constexpr int CountOf() {
+ 
+ template <size_t N>
+ constexpr std::array<std::string_view, N> SplitNames(const char* raw_names) {
+-  std::array<std::string_view, N> result;
++  std::array<std::string_view, N> result{};
+   std::string_view names(raw_names);
+ 
+   // Remove '(' and ')'.
