@@ -1,5 +1,7 @@
 # GPT-13
 
+[简体中文](README.zh-CN.md)
+
 An unofficial, Gecko-based ChatGPT web client for older iPhones. It opens
 `chatgpt.com` directly instead of embedding Apple's WebKit, so it remains
 usable on systems whose bundled WebKit is too old for the ChatGPT website.
