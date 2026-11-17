@@ -1,0 +1,126 @@
+# DRAFT — untested. Do not expect a one-click build yet.
+#
+# Why this is a draft:
+# - The release and Gecko scripts in tools/ expect the repository on an
+#   external volume under /Volumes/ and a preinstalled Mozilla toolchain
+#   cache (Clang 21, Node 22) plus /Volumes/Outside. A fresh
+#   GitHub-hosted macOS runner provides none of these, so the full build
+#   steps below will fail fast at the preflight step with an explanation
+#   instead of wasting hours.
+# - The navigation-policy test step uses xcrun swiftc directly so the
+#   Muse URL/auth policy can be validated on any Mac runner without Gecko.
+# - To run a full build, use a self-hosted Mac runner that already has the
+#   external volume, toolchains, Xcode 15.2, Rust, xcodegen and ldid, and
+#   change runs-on below to that runner's labels. Do not remove the volume
+#   guards from tools/ without understanding why they exist (disk space and
+#   Swift PCH path handling).
+#
+# Trigger is manual-only (workflow_dispatch) until the first full build
+# succeeds. Do not add `push` triggering until then.
+
+name: Build TrollStore package (draft)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-tipa:
+    # TODO: verify which Xcode versions this runner image provides.
+    # The project targets Xcode 15.2 (see browser/project-reynardgpt.yml).
+    # Check the "Show environment" step output on the first run and adjust.
+    runs-on: macos-15
+    timeout-minutes: 360
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          # Full history: the build script counts commits for the build number.
+          fetch-depth: 0
+          # Do not fetch submodules here. tools/development/update-gecko.sh
+          # fetches the pinned Firefox tag at depth 1 instead.
+          submodules: false
+
+      - name: Show environment
+        run: |
+          set -euo pipefail
+          uname -a
+          pwd
+          df -h
+          ls /Applications/ | grep -i xcode || true
+          xcodebuild -version || true
+          xcrun --sdk iphoneos --show-sdk-path || true
+          rustc --version || true
+          cargo --version || true
+          rustup target list --installed || true
+          command -v xcodegen || true
+          command -v ldid || true
+
+      - name: Run navigation-policy tests (no Gecko needed)
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/muse-policy-tests
+          xcrun swiftc \
+            browser/ReynardGPT/Core/GPTNavigationPolicy.swift \
+            browser/ReynardGPT/Core/GPTUserAgentPolicy.swift \
+            tests/ReynardGPTNavigationPolicyTests.swift \
+            -o /tmp/muse-policy-tests/ReynardGPTNavigationPolicyTests
+          /tmp/muse-policy-tests/ReynardGPTNavigationPolicyTests
+
+      - name: Preflight full-build requirements
+        run: |
+          set -euo pipefail
+          echo "Checking requirements for tools/development/build-gecko.sh and tools/release/*.sh ..."
+          if [ ! -d /Volumes/Outside ] || [ ! -w /Volumes/Outside ]; then
+            echo "::error::/Volumes/Outside is not mounted and writable. The Gecko and release scripts require an external volume. Use a self-hosted Mac runner with the documented external-volume setup, or adapt tools/ for CI (untested)."
+            exit 1
+          fi
+          case "$GITHUB_WORKSPACE" in
+            /Volumes/*/*) ;;
+            *)
+              echo "::error::Repository is not under /Volumes/. The release scripts refuse to run elsewhere. Use a self-hosted runner with the repository on an external volume."
+              exit 1
+              ;;
+          esac
+          echo "Preflight passed. Continuing to the full build."
+
+      - name: Install build tools
+        run: |
+          set -euo pipefail
+          # TODO: verify ldid availability on the chosen runner image.
+          brew install xcodegen ldid || brew install xcodegen
+          command -v xcodegen
+          command -v ldid
+          rustup target add aarch64-apple-ios
+
+      - name: Fetch and patch Gecko
+        run: |
+          set -euo pipefail
+          tools/development/update-gecko.sh
+          # NOTE: apply-patches.sh prompts interactively if a patch fails.
+          # In CI a patch failure needs manual investigation; do not expect
+          # it to resolve itself.
+          tools/development/apply-patches.sh
+
+      - name: Build Gecko
+        timeout-minutes: 330
+        run: |
+          set -euo pipefail
+          tools/development/build-gecko.sh
+
+      - name: Build app and TrollStore package
+        run: |
+          set -euo pipefail
+          tools/release/build-reynardgpt.sh
+          tools/release/create-reynardgpt-tipa.sh
+          tools/release/verify-reynardgpt-tipa.sh
+          ls -lh dist/
+
+      - name: Upload TrollStore package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Muse-TrollStore-tipa
+          path: dist/*.tipa
+          if-no-files-found: error
