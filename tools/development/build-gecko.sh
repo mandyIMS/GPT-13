@@ -48,6 +48,36 @@ if [ ! -f "$MACOS_SDK_ROOT/usr/include/xpc/xpc.h" ]; then
 	exit 1
 fi
 
+python_suitable() {
+	# mach needs Python 3.10+ with a working pip module to build its
+	# virtualenvs. The runner's /usr/bin/python3 is too old and ships
+	# without pip, which makes every package install fail.
+	python3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)" 2>/dev/null \
+		&& python3 -m pip --version >/dev/null 2>&1
+}
+
+# CI only: when the default python3 is unsuitable for mach, install a
+# Homebrew Python 3.13 and put it first on PATH. Local behavior unchanged.
+if [ "${REYNARD_ALLOW_INTERNAL_STORAGE:-0}" = "1" ]; then
+	if ! python_suitable; then
+		if command -v brew >/dev/null 2>&1; then
+			echo "Default python3 is unsuitable for mach; installing python@3.13 via Homebrew."
+			brew list python@3.13 >/dev/null 2>&1 || brew install python@3.13
+			for candidate in /opt/homebrew/opt/python@3.13/bin /usr/local/opt/python@3.13/bin; do
+				if [ -x "$candidate/python3" ]; then
+					export PATH="$candidate:$PATH"
+					break
+				fi
+			done
+		fi
+	fi
+	if ! python_suitable; then
+		echo "No suitable Python 3.10+ with pip found; mach cannot run."
+		exit 1
+	fi
+	echo "Python for mach: $(command -v python3) ($(python3 --version 2>&1))"
+fi
+
 export CC="$CLANG_ROOT/bin/clang"
 export CXX="$CLANG_ROOT/bin/clang++"
 export HOST_CC="$CLANG_ROOT/bin/clang"
