@@ -16,9 +16,14 @@ TARGET="${REYNARD_GECKO_TARGET:-aarch64-apple-ios}"
 BUILD_JOBS="${REYNARD_BUILD_JOBS:-2}"
 CARGO_JOBS="${REYNARD_CARGO_JOBS:-1}"
 
-if [ ! -d /Volumes/Outside ] || [ ! -w /Volumes/Outside ]; then
-	echo "Outside volume is not mounted and writable; refusing to use internal storage."
-	exit 1
+# CI opt-in: when REYNARD_ALLOW_INTERNAL_STORAGE=1, skip the external-volume
+# guard and build on internal storage. Default behavior is unchanged: the
+# guard still protects local machines from filling their internal disk.
+if [ "${REYNARD_ALLOW_INTERNAL_STORAGE:-0}" != "1" ]; then
+	if [ ! -d /Volumes/Outside ] || [ ! -w /Volumes/Outside ]; then
+		echo "Outside volume is not mounted and writable; refusing to use internal storage."
+		exit 1
+	fi
 fi
 
 export MOZBUILD_STATE_PATH="${MOZBUILD_STATE_PATH:-$CACHE_ROOT/mozbuild}"
