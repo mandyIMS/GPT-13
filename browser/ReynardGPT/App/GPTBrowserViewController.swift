@@ -460,7 +460,7 @@ extension GPTBrowserViewController: PermissionEmbedderDelegate {
             }
             let allowed = await confirm(
                 title: "Allow \(host)?",
-                message: "This permission is required by the current ChatGPT page."
+                message: "This permission is required by the current Muse page."
             )
             GPTSitePermissionStore.setDecision(allowed, for: requestedPermission, host: host)
             let value: ContentPermission.Value = allowed ? .allow : .deny
@@ -551,7 +551,7 @@ extension GPTBrowserViewController: PromptDelegate {
         case .folderUpload:
             return .folderUpload(allowed: await confirm(
                 title: "Upload this folder?",
-                message: "The selected folder contents will be shared with ChatGPT."
+                message: "The selected folder contents will be shared with Muse."
             ))
         case .color(let request):
             return .color(request.value)
