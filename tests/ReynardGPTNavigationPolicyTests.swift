@@ -27,7 +27,7 @@ private func context(
     target: GPTNavigationTarget = .current,
     gesture: Bool = false,
     redirect: Bool = false,
-    trigger: String? = "https://chatgpt.com/",
+    trigger: String? = "https://muse.ai/",
     auth: Bool = false
 ) -> GPTNavigationContext {
     GPTNavigationContext(
@@ -47,25 +47,25 @@ private enum NavigationPolicyTestRunner {
         let userAgentPolicy = GPTUserAgentPolicy()
 
 expect(
-    "ChatGPT page",
-    policy.decision(for: URL(string: "https://chatgpt.com/c/123"), context: context()),
+    "Muse page",
+    policy.decision(for: URL(string: "https://muse.ai/"), context: context()),
     .allowInApp
 )
 expect(
-    "ChatGPT subdomain",
-    policy.decision(for: URL(string: "https://help.chatgpt.com/article"), context: context()),
+    "Muse subdomain",
+    policy.decision(for: URL(string: "https://www.muse.ai/"), context: context()),
     .allowInApp
 )
 expect(
-    "OpenAI login",
-    policy.decision(for: URL(string: "https://auth.openai.com/authorize"), context: context()),
+    "Google login from Muse",
+    policy.decision(for: URL(string: "https://accounts.google.com/o/oauth2/auth"), context: context()),
     .allowInApp
 )
 expect(
     "OAuth provider during auth",
     policy.decision(
         for: URL(string: "https://accounts.google.com/o/oauth2/auth"),
-        context: context(trigger: "https://auth.openai.com/authorize", auth: true)
+        context: context(trigger: "https://muse.ai/", auth: true)
     ),
     .allowInApp
 )
@@ -73,12 +73,12 @@ expect(
     "Apple OAuth provider during auth",
     policy.decision(
         for: URL(string: "https://appleid.apple.com/auth/authorize"),
-        context: context(trigger: "https://auth.openai.com/authorize", auth: true)
+        context: context(trigger: "https://muse.ai/", auth: true)
     ),
     .allowInApp
 )
 expect(
-    "Cloudflare top-level challenge from ChatGPT",
+    "Cloudflare top-level challenge from Muse",
     policy.decision(
         for: URL(string: "https://challenges.cloudflare.com/turnstile/v0/"),
         context: context(redirect: true)
@@ -86,12 +86,12 @@ expect(
     .allowInApp
 )
 expect(
-    "ChatGPT signed download host",
+    "Auth host without Muse trigger is denied",
     policy.decision(
-        for: URL(string: "https://files.oaiusercontent.com/file-download"),
-        context: context(redirect: true)
+        for: URL(string: "https://accounts.google.com/o/oauth2/auth"),
+        context: context(trigger: "https://example.org/")
     ),
-    .allowInApp
+    .deny
 )
 expect(
     "External reference click",
@@ -118,9 +118,9 @@ expect(
     .openExternally
 )
 expect(
-    "window.open ChatGPT",
+    "window.open Muse",
     policy.decision(
-        for: URL(string: "https://chatgpt.com/share/123"),
+        for: URL(string: "https://muse.ai/"),
         context: context(target: .newWindow, gesture: true)
     ),
     .allowInApp
@@ -165,9 +165,9 @@ expectUserAgentMode(
     .googleAuthentication
 )
 expectUserAgentMode(
-    "ChatGPT uses the standard UA",
+    "Muse uses the standard UA",
     userAgentPolicy.configuration(
-        for: URL(string: "https://chatgpt.com/"),
+        for: URL(string: "https://muse.ai/"),
         geckoVersion: "153.0"
     ).mode,
     .standard
@@ -201,7 +201,7 @@ if googleConfiguration.userAgentOverride?.contains("Chrome/157.0.0.0") != true {
 }
 
 let standardConfiguration = userAgentPolicy.configuration(
-    for: URL(string: "https://chatgpt.com/"),
+    for: URL(string: "https://muse.ai/"),
     geckoVersion: "153.0"
 )
 if standardConfiguration.userAgentOverride
