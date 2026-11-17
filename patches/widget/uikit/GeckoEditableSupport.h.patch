@@ -1,4 +1,4 @@
-diff --git a/engine/firefox/widget/uikit/GeckoEditableSupport.h b/engine/firefox/widget/uikit/GeckoEditableSupport.h
+diff --git a/widget/uikit/GeckoEditableSupport.h b/widget/uikit/GeckoEditableSupport.h
 new file mode 100644
 index 0000000..d1f82b4
 --- /dev/null
