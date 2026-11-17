@@ -21,16 +21,13 @@ struct GPTNavigationContext: Equatable {
 }
 
 struct GPTNavigationPolicy {
-    static let homeURL = URL(string: "https://chatgpt.com/")!
+    static let homeURL = URL(string: "https://muse.ai/")!
 
-    private static let chatGPTHosts: Set<String> = [
-        "chatgpt.com",
-        "chat.openai.com",
+    private static let museHosts: Set<String> = [
+        "muse.ai",
     ]
 
     private static let authenticationHosts: Set<String> = [
-        "auth.openai.com",
-        "auth0.openai.com",
         "accounts.google.com",
         "appleid.apple.com",
         "login.live.com",
@@ -39,11 +36,6 @@ struct GPTNavigationPolicy {
 
     private static let challengeHosts: Set<String> = [
         "challenges.cloudflare.com",
-    ]
-
-    private static let chatGPTAssetDomains: Set<String> = [
-        "oaistatic.com",
-        "oaiusercontent.com",
     ]
 
     private static let externallyHandledSchemes: Set<String> = [
@@ -61,7 +53,7 @@ struct GPTNavigationPolicy {
             return .deny
         }
 
-        // The restriction is deliberately top-level only. ChatGPT relies on
+        // The restriction is deliberately top-level only. Muse relies on
         // cross-origin APIs, scripts, frames, images and challenge resources.
         guard context.isTopLevel else {
             return .allowInApp
@@ -80,22 +72,18 @@ struct GPTNavigationPolicy {
             return .deny
         }
 
-        if isChatGPTHost(host) {
+        if isMuseHost(host) {
             return .allowInApp
         }
 
         if isAuthenticationHost(host) {
-            if context.authenticationFlowActive || beganFromChatGPT(context.triggerURL) {
+            if context.authenticationFlowActive || beganFromMuse(context.triggerURL) {
                 return .allowInApp
             }
             return context.hasUserGesture ? .openExternally : .deny
         }
 
         if isChallengeHost(host) {
-            return beganFromTrustedFlow(context.triggerURL) ? .allowInApp : .deny
-        }
-
-        if isChatGPTAssetHost(host) {
             return beganFromTrustedFlow(context.triggerURL) ? .allowInApp : .deny
         }
 
@@ -121,15 +109,15 @@ struct GPTNavigationPolicy {
               let host = normalizedHost(url) else {
             return false
         }
-        return isChatGPTHost(host)
+        return isMuseHost(host)
     }
 
-    private func beganFromChatGPT(_ triggerURL: URL?) -> Bool {
+    private func beganFromMuse(_ triggerURL: URL?) -> Bool {
         guard let triggerURL,
               let host = normalizedHost(triggerURL) else {
             return false
         }
-        return isChatGPTHost(host)
+        return isMuseHost(host)
     }
 
     private func beganFromTrustedFlow(_ triggerURL: URL?) -> Bool {
@@ -137,7 +125,7 @@ struct GPTNavigationPolicy {
               let host = normalizedHost(triggerURL) else {
             return false
         }
-        return isChatGPTHost(host) || isAuthenticationHost(host) || isChallengeHost(host)
+        return isMuseHost(host) || isAuthenticationHost(host) || isChallengeHost(host)
     }
 
     private func normalizedHost(_ url: URL) -> String? {
@@ -148,8 +136,8 @@ struct GPTNavigationPolicy {
         return host
     }
 
-    private func isChatGPTHost(_ host: String) -> Bool {
-        Self.chatGPTHosts.contains(host) || host.hasSuffix(".chatgpt.com")
+    private func isMuseHost(_ host: String) -> Bool {
+        Self.museHosts.contains(host) || host.hasSuffix(".muse.ai")
     }
 
     private func isAuthenticationHost(_ host: String) -> Bool {
@@ -158,11 +146,5 @@ struct GPTNavigationPolicy {
 
     private func isChallengeHost(_ host: String) -> Bool {
         Self.challengeHosts.contains(host)
-    }
-
-    private func isChatGPTAssetHost(_ host: String) -> Bool {
-        Self.chatGPTAssetDomains.contains { domain in
-            host == domain || host.hasSuffix("." + domain)
-        }
     }
 }
