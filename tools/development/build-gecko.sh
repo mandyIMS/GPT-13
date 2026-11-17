@@ -109,4 +109,10 @@ if ! rustup target list | grep -q "^$TARGET (installed)"; then
 fi
 
 cd "$FIREFOX_DIR"
+# CI probe mode: REYNARD_CONFIGURE_ONLY=1 runs configure without building,
+# surfacing missing-tool and SDK errors cheaply. Default behavior unchanged.
+if [ "${REYNARD_CONFIGURE_ONLY:-0}" = "1" ]; then
+	./mach configure
+	exit 0
+fi
 ./mach build --jobs "$BUILD_JOBS"
