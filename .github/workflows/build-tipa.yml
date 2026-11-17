@@ -1,38 +1,51 @@
-# DRAFT — untested. Do not expect a one-click build yet.
+# Build TrollStore package on GitHub-hosted macOS runners (experimental).
 #
-# Why this is a draft:
-# - The release and Gecko scripts in tools/ expect the repository on an
-#   external volume under /Volumes/ and a preinstalled Mozilla toolchain
-#   cache (Clang 21, Node 22) plus /Volumes/Outside. A fresh
-#   GitHub-hosted macOS runner provides none of these, so the full build
-#   steps below will fail fast at the preflight step with an explanation
-#   instead of wasting hours.
-# - The navigation-policy test step uses xcrun swiftc directly so the
-#   Muse URL/auth policy can be validated on any Mac runner without Gecko.
-# - To run a full build, use a self-hosted Mac runner that already has the
-#   external volume, toolchains, Xcode 15.2, Rust, xcodegen and ldid, and
-#   change runs-on below to that runner's labels. Do not remove the volume
-#   guards from tools/ without understanding why they exist (disk space and
-#   Swift PCH path handling).
+# Two modes, selected when the workflow is run by hand:
+# - probe (default): validates the runner without building Gecko. Checks the
+#   environment, installs tools, fetches and patches the Firefox source,
+#   generates the Xcode project, and reports disk headroom. Finishes in
+#   well under an hour. Run this first; only attempt `full` if it passes.
+# - full: runs the whole build (Gecko + app + TrollStore package). NOTE: the
+#   full build additionally requires the pinned Mozilla Clang 21 / Node 22
+#   toolchains, and nothing in this repository downloads them yet, so
+#   `full` is expected to stop at the toolchain check in
+#   tools/development/build-gecko.sh until a bootstrap step is added.
 #
-# Trigger is manual-only (workflow_dispatch) until the first full build
-# succeeds. Do not add `push` triggering until then.
+# CI adaptation: the scripts in tools/ normally refuse to run unless the
+# repository lives on an external volume under /Volumes/ with a preinstalled
+# toolchain cache. Setting REYNARD_ALLOW_INTERNAL_STORAGE=1 (done below)
+# opts in to building on the runner's internal storage. The guards in
+# tools/ are unchanged by default; only this opt-in skips them. Disk space,
+# the 6-hour job limit, and runner RAM remain the main risks for `full`.
+#
+# Trigger is manual-only (workflow_dispatch). Do not add `push` triggering
+# until the first full build succeeds.
 
 name: Build TrollStore package (draft)
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run mode: probe validates the runner, full builds everything"
+        type: choice
+        options:
+          - probe
+          - full
+        default: probe
 
 permissions:
   contents: read
 
 jobs:
   build-tipa:
-    # TODO: verify which Xcode versions this runner image provides.
-    # The project targets Xcode 15.2 (see browser/project-reynardgpt.yml).
-    # Check the "Show environment" step output on the first run and adjust.
     runs-on: macos-15
     timeout-minutes: 360
+    env:
+      REYNARD_CACHE_ROOT: ${{ github.workspace }}/.cache/reynard
+      REYNARD_ALLOW_INTERNAL_STORAGE: "1"
+      REYNARD_BUILD_JOBS: "2"
+      REYNARD_CARGO_JOBS: "1"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -47,14 +60,22 @@ jobs:
         run: |
           set -euo pipefail
           uname -a
+          uname -m
+          sysctl hw.memsize hw.ncpu hw.model || true
           pwd
           df -h
+          sudo -n true && echo "passwordless sudo: yes" || echo "passwordless sudo: no"
           ls /Applications/ | grep -i xcode || true
           xcodebuild -version || true
           xcrun --sdk iphoneos --show-sdk-path || true
+          xcrun --sdk macosx --show-sdk-path || true
+          MACOS_SDK="$(xcrun --sdk macosx --show-sdk-path || true)"
+          if [ -n "$MACOS_SDK" ] && [ -f "$MACOS_SDK/usr/include/xpc/xpc.h" ]; then echo "XPC headers: present"; else echo "XPC headers: MISSING"; fi
           rustc --version || true
           cargo --version || true
           rustup target list --installed || true
+          python3 --version || true
+          git --version || true
           command -v xcodegen || true
           command -v ldid || true
 
@@ -69,22 +90,17 @@ jobs:
             -o /tmp/muse-policy-tests/ReynardGPTNavigationPolicyTests
           /tmp/muse-policy-tests/ReynardGPTNavigationPolicyTests
 
-      - name: Preflight full-build requirements
+      - name: Preflight (CI mode)
         run: |
           set -euo pipefail
-          echo "Checking requirements for tools/development/build-gecko.sh and tools/release/*.sh ..."
-          if [ ! -d /Volumes/Outside ] || [ ! -w /Volumes/Outside ]; then
-            echo "::error::/Volumes/Outside is not mounted and writable. The Gecko and release scripts require an external volume. Use a self-hosted Mac runner with the documented external-volume setup, or adapt tools/ for CI (untested)."
+          echo "CI mode: REYNARD_ALLOW_INTERNAL_STORAGE=$REYNARD_ALLOW_INTERNAL_STORAGE"
+          if [ "${REYNARD_ALLOW_INTERNAL_STORAGE:-0}" != "1" ]; then
+            echo "::error::CI bypass is not enabled. This workflow requires REYNARD_ALLOW_INTERNAL_STORAGE=1."
             exit 1
           fi
-          case "$GITHUB_WORKSPACE" in
-            /Volumes/*/*) ;;
-            *)
-              echo "::error::Repository is not under /Volumes/. The release scripts refuse to run elsewhere. Use a self-hosted runner with the repository on an external volume."
-              exit 1
-              ;;
-          esac
-          echo "Preflight passed. Continuing to the full build."
+          echo "Cache root: $REYNARD_CACHE_ROOT"
+          df -h
+          echo "Preflight passed (disk headroom is evaluated from probe output; no threshold is enforced yet)."
 
       - name: Install build tools
         run: |
@@ -93,24 +109,45 @@ jobs:
           brew install xcodegen ldid || brew install xcodegen
           command -v xcodegen
           command -v ldid
-          rustup target add aarch64-apple-ios
+          xcodegen --version || true
+          time rustup target add aarch64-apple-ios
 
       - name: Fetch and patch Gecko
         run: |
           set -euo pipefail
-          tools/development/update-gecko.sh
-          # NOTE: apply-patches.sh prompts interactively if a patch fails.
-          # In CI a patch failure needs manual investigation; do not expect
-          # it to resolve itself.
-          tools/development/apply-patches.sh
+          df -h
+          time tools/development/update-gecko.sh
+          du -sh engine/firefox || true
+          df -h
+          time tools/development/apply-patches.sh
+          df -h
+
+      - name: Probe report (no Gecko build)
+        if: ${{ inputs.mode == 'probe' }}
+        run: |
+          set -euo pipefail
+          echo "=== Xcode project generation check ==="
+          xcodegen --spec browser/project-reynardgpt.yml --project browser --project-root browser
+          xcodebuild -project browser/ReynardGPT.xcodeproj -scheme ReynardGPT -list || true
+          echo "=== Toolchain paths (expected under cache root) ==="
+          echo "REYNARD_CACHE_ROOT=$REYNARD_CACHE_ROOT"
+          ls -la "$REYNARD_CACHE_ROOT/toolchains" || echo "No toolchains directory yet (expected before bootstrap)."
+          echo "=== Disk projection ==="
+          df -h
+          du -sh engine/firefox "$REYNARD_CACHE_ROOT" 2>/dev/null || true
+          echo "Probe complete. Review the output above before running mode=full."
 
       - name: Build Gecko
+        if: ${{ inputs.mode == 'full' }}
         timeout-minutes: 330
         run: |
           set -euo pipefail
+          df -h
           tools/development/build-gecko.sh
+          df -h
 
       - name: Build app and TrollStore package
+        if: ${{ inputs.mode == 'full' }}
         run: |
           set -euo pipefail
           tools/release/build-reynardgpt.sh
@@ -119,6 +156,7 @@ jobs:
           ls -lh dist/
 
       - name: Upload TrollStore package
+        if: ${{ inputs.mode == 'full' }}
         uses: actions/upload-artifact@v4
         with:
           name: Muse-TrollStore-tipa
