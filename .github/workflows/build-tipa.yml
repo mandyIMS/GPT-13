@@ -3,20 +3,19 @@
 # Two modes, selected when the workflow is run by hand:
 # - probe (default): validates the runner without building Gecko. Checks the
 #   environment, installs tools, fetches and patches the Firefox source,
-#   generates the Xcode project, and reports disk headroom. Finishes in
-#   well under an hour. Run this first; only attempt `full` if it passes.
-# - full: runs the whole build (Gecko + app + TrollStore package). NOTE: the
-#   full build additionally requires the pinned Mozilla Clang 21 / Node 22
-#   toolchains, and nothing in this repository downloads them yet, so
-#   `full` is expected to stop at the toolchain check in
-#   tools/development/build-gecko.sh until a bootstrap step is added.
+#   downloads the Mozilla Clang 21 / Node 22 toolchains, generates the
+#   Xcode project, and runs ./mach configure without building. Run this
+#   first; only attempt `full` if it passes.
+# - full: runs the whole build (Gecko + app + TrollStore package). The
+#   toolchains are fetched by tools/development/fetch-toolchains.sh.
+#   Remaining risks: runner RAM (7 GB), the 6-hour job limit, and the
+#   Xcode version on the runner image (the project pins Xcode 15.2).
 #
 # CI adaptation: the scripts in tools/ normally refuse to run unless the
 # repository lives on an external volume under /Volumes/ with a preinstalled
 # toolchain cache. Setting REYNARD_ALLOW_INTERNAL_STORAGE=1 (done below)
 # opts in to building on the runner's internal storage. The guards in
-# tools/ are unchanged by default; only this opt-in skips them. Disk space,
-# the 6-hour job limit, and runner RAM remain the main risks for `full`.
+# tools/ are unchanged by default; only this opt-in skips them.
 #
 # Trigger is manual-only (workflow_dispatch). Do not add `push` triggering
 # until the first full build succeeds.
@@ -67,6 +66,7 @@ jobs:
           sudo -n true && echo "passwordless sudo: yes" || echo "passwordless sudo: no"
           ls /Applications/ | grep -i xcode || true
           xcodebuild -version || true
+          xcodebuild -showsdks || true
           xcrun --sdk iphoneos --show-sdk-path || true
           xcrun --sdk macosx --show-sdk-path || true
           MACOS_SDK="$(xcrun --sdk macosx --show-sdk-path || true)"
@@ -75,7 +75,10 @@ jobs:
           cargo --version || true
           rustup target list --installed || true
           python3 --version || true
+          which -a python3 || true
           git --version || true
+          which zstd unzstd || true
+          tar --version || true
           command -v xcodegen || true
           command -v ldid || true
 
@@ -105,10 +108,10 @@ jobs:
       - name: Install build tools
         run: |
           set -euo pipefail
-          # TODO: verify ldid availability on the chosen runner image.
-          brew install xcodegen ldid || brew install xcodegen
+          brew install xcodegen ldid zstd || brew install xcodegen zstd
           command -v xcodegen
           command -v ldid
+          command -v zstd || echo "zstd not installed (native tar fallback will be tried)"
           xcodegen --version || true
           time rustup target add aarch64-apple-ios
 
@@ -122,6 +125,14 @@ jobs:
           time tools/development/apply-patches.sh
           df -h
 
+      - name: Fetch Mozilla toolchains
+        run: |
+          set -euo pipefail
+          df -h
+          # Run via sh: files created through the API have no execute bit.
+          time sh tools/development/fetch-toolchains.sh
+          df -h
+
       - name: Probe report (no Gecko build)
         if: ${{ inputs.mode == 'probe' }}
         run: |
@@ -129,13 +140,31 @@ jobs:
           echo "=== Xcode project generation check ==="
           xcodegen --spec browser/project-reynardgpt.yml --project browser --project-root browser
           xcodebuild -project browser/ReynardGPT.xcodeproj -scheme ReynardGPT -list || true
-          echo "=== Toolchain paths (expected under cache root) ==="
-          echo "REYNARD_CACHE_ROOT=$REYNARD_CACHE_ROOT"
-          ls -la "$REYNARD_CACHE_ROOT/toolchains" || echo "No toolchains directory yet (expected before bootstrap)."
+          echo "=== Fetched toolchains ==="
+          ls -la "$REYNARD_CACHE_ROOT/toolchains" || echo "No toolchains directory."
+          "$REYNARD_CACHE_ROOT/toolchains/macosx64-aarch64-clang-21/clang/bin/clang" --version || true
+          "$REYNARD_CACHE_ROOT/toolchains/macosx64-aarch64-node-22/node/bin/node" --version || true
+          echo "=== Toolchain task definitions in fetched tree ==="
+          { grep -rn "macosx64-aarch64-clang-21" engine/firefox/taskcluster/ 2>/dev/null | head -5; } || echo "clang-21 task not found in taskcluster/ tree"
+          { grep -rn "macosx64-aarch64-node-22" engine/firefox/taskcluster/ 2>/dev/null | head -5; } || echo "node-22 task not found in taskcluster/ tree"
+          echo "=== Node version pin ==="
+          { grep -rn "nodejs-22\|node-22" engine/firefox/taskcluster/kinds/fetch/toolchains.yml 2>/dev/null | head -5; } || echo "node pin not found"
+          echo "=== Toolchain minima ==="
+          { grep -n "MINIMUM_CLANG\|minimum.*clang\|CLANG_VERSION" engine/firefox/build/moz.configure/toolchain.configure 2>/dev/null | head -10; } || echo "no clang minimum found"
           echo "=== Disk projection ==="
           df -h
           du -sh engine/firefox "$REYNARD_CACHE_ROOT" 2>/dev/null || true
-          echo "Probe complete. Review the output above before running mode=full."
+          echo "Probe report done. Configure check runs next."
+
+      - name: Probe configure (no build)
+        if: ${{ inputs.mode == 'probe' }}
+        timeout-minutes: 30
+        run: |
+          set -euo pipefail
+          df -h
+          REYNARD_CONFIGURE_ONLY=1 tools/development/build-gecko.sh
+          echo "Configure passed."
+          df -h
 
       - name: Build Gecko
         if: ${{ inputs.mode == 'full' }}
