@@ -12,10 +12,14 @@ OUTPUT_PATH="$ROOT_DIR/dist/ReynardGPT-TrollStore.tipa"
 CLANG_PATH="$(xcrun --sdk iphoneos --find clang)"
 SDK_PATH="$(xcrun --sdk iphoneos --show-sdk-path)"
 
-case "$ROOT_DIR" in
-	/Volumes/*/*) ;;
-	*) echo "The Reynard repository is not on an external volume."; exit 1 ;;
-esac
+# CI opt-in: REYNARD_ALLOW_INTERNAL_STORAGE=1 skips the external-volume
+# location guard. Default behavior is unchanged.
+if [ "${REYNARD_ALLOW_INTERNAL_STORAGE:-0}" != "1" ]; then
+	case "$ROOT_DIR" in
+		/Volumes/*/*) ;;
+		*) echo "The Reynard repository is not on an external volume."; exit 1 ;;
+	esac
+fi
 if [ ! -w "$ROOT_DIR" ]; then
 	echo "The external Reynard repository is not writable."
 	exit 1
