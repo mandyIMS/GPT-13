@@ -155,10 +155,19 @@ verify_toolchains() {
 	"$node_root/bin/node" --version
 	work="$(mktemp -d)"
 	printf 'int main(void){return 0;}\n' > "$work/hello.c"
-	"$clang_root/bin/clang" -o "$work/hello" "$work/hello.c"
-	"$work/hello"
+	# Mozilla clang does not know the SDK location on its own; without
+	# -isysroot the linker cannot find libSystem. Point it at the macOS
+	# SDK, the same way the real build does. If no SDK is found, fall
+	# back to a compile-only check instead of failing the fetch.
+	if sdk_root="$(xcrun --sdk macosx --show-sdk-path 2>/dev/null)" && [ -n "$sdk_root" ]; then
+		"$clang_root/bin/clang" -isysroot "$sdk_root" -o "$work/hello" "$work/hello.c"
+		"$work/hello"
+	else
+		echo "No macOS SDK found; running compile-only check."
+		"$clang_root/bin/clang" -c -o "$work/hello.o" "$work/hello.c"
+	fi
 	rm -rf "$work"
-	echo "Hello-world compile with Mozilla clang: OK"
+	echo "Hello-world check with Mozilla clang: OK"
 }
 
 fetch_toolchain "$CLANG_INDEX" "$CLANG_ARTIFACT" "macosx64-aarch64-clang-21" "clang" "bin/clang"
