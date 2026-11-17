@@ -67,7 +67,7 @@ final class GPTSettingsViewController: UITableViewController {
 
         let alert = UIAlertController(
             title: "Sign out and clear website data?",
-            message: "This removes ChatGPT, OpenAI, Google, Apple and Microsoft sign-in data stored inside GPT. It does not affect Safari or other apps.",
+            message: "This removes Muse, Google, Apple and Microsoft sign-in data stored inside Muse Web. It does not affect Safari or other apps.",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
