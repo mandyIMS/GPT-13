@@ -29,8 +29,8 @@ plutil -lint \
 	"$ROOT_DIR/browser/ReynardGPT/Entitlements/ReynardGPTHelper.private.entitlements" \
 	>/dev/null
 
-[[ "$(plutil -extract CFBundleDisplayName raw "$ROOT_DIR/browser/ReynardGPT/Resources/Info.plist")" == "Muse Web" ]]
-[[ "$(plutil -extract CFBundleName raw "$ROOT_DIR/browser/ReynardGPT/Resources/Info.plist")" == "Muse Web" ]]
+[[ "$(plutil -extract CFBundleDisplayName raw "$ROOT_DIR/browser/ReynardGPT/Resources/Info.plist")" == "Muse Web 測試版" ]]
+[[ "$(plutil -extract CFBundleName raw "$ROOT_DIR/browser/ReynardGPT/Resources/Info.plist")" == "Muse Web 測試版" ]]
 
 icon="$ROOT_DIR/browser/ReynardGPT/Resources/Assets.xcassets/AppIcon.appiconset/icon.png"
 [[ "$(sips -g pixelWidth "$icon" | awk '/pixelWidth:/ { print $2 }')" == "1024" ]]
