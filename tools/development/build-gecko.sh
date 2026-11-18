@@ -78,6 +78,22 @@ if [ "${REYNARD_ALLOW_INTERNAL_STORAGE:-0}" = "1" ]; then
 	echo "Python for mach: $(command -v python3) ($(python3 --version 2>&1))"
 fi
 
+# CI only: configure requires cbindgen, which is not preinstalled on the
+# runner. Install it via Homebrew when missing. Local behavior unchanged.
+if [ "${REYNARD_ALLOW_INTERNAL_STORAGE:-0}" = "1" ]; then
+	if ! command -v cbindgen >/dev/null 2>&1; then
+		if command -v brew >/dev/null 2>&1; then
+			echo "cbindgen is missing; installing it via Homebrew."
+			brew install cbindgen
+		fi
+	fi
+	if ! command -v cbindgen >/dev/null 2>&1; then
+		echo "cbindgen is required by configure but could not be installed."
+		exit 1
+	fi
+	echo "cbindgen for mach: $(command -v cbindgen) ($(cbindgen --version 2>&1))"
+fi
+
 export CC="$CLANG_ROOT/bin/clang"
 export CXX="$CLANG_ROOT/bin/clang++"
 export HOST_CC="$CLANG_ROOT/bin/clang"
