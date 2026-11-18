@@ -112,7 +112,7 @@ final class GPTSettingsViewController: UITableViewController {
 
         let alert = UIAlertController(
             title: "Sign out and clear website data?",
-            message: "This removes sign-in data for all sites stored inside Muse Web. It does not affect Safari or other apps.",
+            message: "This removes sign-in data for all sites stored inside Muse Web 測試版. It does not affect Safari or other apps.",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
@@ -123,8 +123,8 @@ final class GPTSettingsViewController: UITableViewController {
                     try await self.clearWebsiteData()
                     self.tableView.reloadRows(at: [IndexPath(row: 0, section: 2)], with: .none)
                     self.showResult(
-                        title: "Ready to Reset Muse Web",
-                        message: "Tap OK to close Muse Web, then reopen it. The Gecko profile will be removed before the browser engine starts."
+                        title: "Ready to Reset Muse Web 測試版",
+                        message: "Tap OK to close Muse Web 測試版, then reopen it. The Gecko profile will be removed before the browser engine starts."
                     ) { [weak self] in
                         guard let self else { return }
                         self.dismiss(animated: true) {
