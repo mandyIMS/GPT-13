@@ -15,6 +15,7 @@ protocol GeckoSessionHandlerCommon: GeckoEventListenerInternal {
 
 public enum GeckoSessionLoadFlags {
     public static let none = 0
+    public static let bypassCache = 1 << 0
     public static let replaceHistory = 1 << 6
 }
 
@@ -125,15 +126,6 @@ public class GeckoSession {
     }
     public lazy var mediaSession = MediaSession(session: self)
     private lazy var autofillHandler = GeckoAutofillHandler(session: self)
-    private lazy var pictureInPictureHandler = newPictureInPictureHandler(self)
-    public var pictureInPictureDelegate: PictureInPictureDelegate? {
-        get { pictureInPictureHandler.delegate }
-        set { pictureInPictureHandler.delegate = newValue }
-    }
-    public var pictureInPictureDisplayLayer: AVSampleBufferDisplayLayer? {
-        return pictureInPictureHandler.displayLayer
-    }
-    
     public func notifyScreenOrientationChanged(to orientation: UIInterfaceOrientation) {
         window?.updateScreenOrientation(orientation.rawValue)
     }
@@ -152,7 +144,6 @@ public class GeckoSession {
         selectionActionHandler,
         mediaSessionHandler,
         autofillHandler,
-        pictureInPictureHandler,
     ]
     
     // MARK: - Lifecycle
@@ -247,7 +238,6 @@ public class GeckoSession {
         selectionActionDelegate = nil
         mediaSessionDelegate?.onDeactivated(session: self)
         mediaSessionDelegate = nil
-        pictureInPictureDelegate = nil
         
         guard let window else {
             return
@@ -274,11 +264,11 @@ public class GeckoSession {
             ])
     }
     
-    public func reload() {
+    public func reload(flags: Int = GeckoSessionLoadFlags.none) {
         dispatcher.dispatch(
             type: "GeckoView:Reload",
             message: [
-                "flags": 0
+                "flags": flags
             ])
     }
     
@@ -371,14 +361,19 @@ public class GeckoSession {
     }
     
     // Keyboard
-    public func focusedInputBottomRatio() async -> CGFloat? {
+    public func dismissSoftwareKeyboard() {
+        window?.dismissSoftwareKeyboard()
+    }
+    
+    public func focusedInputMetrics() async -> (bottomRatio: CGFloat, caretTop: CGFloat?)? {
         let response = try? await dispatcher.query(type: "GeckoView:GetFocusedInputMetrics")
         guard let values = response as? [AnyHashable: Any],
-              let bottomRatioValue = values["bottomRatio"] else {
+              let bottomRatio = PayloadValue.cgFloat(values["bottomRatio"]),
+              let engineView else {
             return nil
         }
-        
-        return PayloadValue.cgFloat(bottomRatioValue)
+        let caretTop = PayloadValue.cgFloat(values["caretTop"])
+        return (bottomRatio, caretTop.map { $0 / engineView.contentScaleFactor })
     }
     
     @discardableResult
@@ -403,11 +398,24 @@ public class GeckoSession {
     }
     
     // MARK: - Toolbar
-    public func setDynamicToolbarMaxHeight(_ height: CGFloat) {
-        window?.setDynamicToolbarMaxHeight(max(0, height))
+    public func setDynamicToolbarMaxHeight(_ height: CGFloat, minHeight: CGFloat) {
+        let maxHeight = max(0, height)
+        window?.setDynamicToolbarMaxHeight(maxHeight, minHeight: min(max(0, minHeight), maxHeight))
     }
     
-    public func setContentBottomOffset(_ offset: CGFloat) {
-        window?.setFixedBottomOffset(offset)
+    public func setContentOffsets(
+        top: CGFloat,
+        bottom: CGFloat,
+        topInset: CGFloat,
+        bottomInset: CGFloat,
+        contentTranslationY: CGFloat
+    ) {
+        window?.setContentOffsets(
+            top,
+            bottom: bottom,
+            topInset: topInset,
+            bottomInset: bottomInset,
+            contentTranslationY: contentTranslationY
+        )
     }
 }
