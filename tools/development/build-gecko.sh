@@ -134,9 +134,27 @@ trap cleanup EXIT
 	fi
 } > "$MOZCONFIG_PATH"
 
-if ! rustup target list | grep -q "^$TARGET (installed)"; then
-	rustup target add "$TARGET"
-fi
+# Resolve the Rust toolchain from inside the Firefox tree so
+# rust-toolchain.toml governs: `rustup which rustc` (used by configure)
+# does not auto-install, and the toolchain pinned by the source tree may
+# differ from the runner's default. Install the pinned channel when it is
+# missing, then add the iOS target for that toolchain. The subshell keeps
+# the working directory unchanged.
+(
+	cd "$FIREFOX_DIR"
+	if ! rustup which rustc >/dev/null 2>&1; then
+		echo "Rust toolchain for this source tree is not installed; installing it."
+		pinned_channel="$(sed -n 's/^[[:space:]]*channel[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' rust-toolchain.toml 2>/dev/null | head -n 1)"
+		if [ -n "${pinned_channel:-}" ]; then
+			rustup toolchain install "$pinned_channel"
+		else
+			rustup toolchain install
+		fi
+	fi
+	if ! rustup target list | grep -q "^$TARGET (installed)"; then
+		rustup target add "$TARGET"
+	fi
+)
 
 cd "$FIREFOX_DIR"
 # CI probe mode: REYNARD_CONFIGURE_ONLY=1 runs configure without building,
