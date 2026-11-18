@@ -156,6 +156,82 @@ expect(
     ),
     .deny
 )
+expect(
+    "Claude page",
+    policy.decision(for: URL(string: "https://claude.ai/"), context: context()),
+    .allowInApp
+)
+expect(
+    "Claude subdomain",
+    policy.decision(for: URL(string: "https://www.claude.ai/"), context: context()),
+    .allowInApp
+)
+expect(
+    "Gemini page",
+    policy.decision(for: URL(string: "https://gemini.google.com/"), context: context()),
+    .allowInApp
+)
+expect(
+    "Grok page",
+    policy.decision(for: URL(string: "https://grok.com/"), context: context()),
+    .allowInApp
+)
+expect(
+    "Grok login via X from Grok",
+    policy.decision(
+        for: URL(string: "https://x.com/i/flow/login"),
+        context: context(trigger: "https://grok.com/")
+    ),
+    .allowInApp
+)
+expect(
+    "X login without allowed trigger is denied",
+    policy.decision(
+        for: URL(string: "https://x.com/i/flow/login"),
+        context: context(trigger: "https://example.org/")
+    ),
+    .deny
+)
+expect(
+    "Auth host from Claude is allowed",
+    policy.decision(
+        for: URL(string: "https://accounts.google.com/o/oauth2/auth"),
+        context: context(trigger: "https://claude.ai/")
+    ),
+    .allowInApp
+)
+expect(
+    "Cloudflare challenge from Gemini",
+    policy.decision(
+        for: URL(string: "https://challenges.cloudflare.com/turnstile/v0/"),
+        context: context(trigger: "https://gemini.google.com/", redirect: true)
+    ),
+    .allowInApp
+)
+if GPTNavigationPolicy.homeURL.absoluteString != "https://muse.ai/" {
+    failures.append("Selected site does not default to Muse")
+}
+if let customSite = GPTSiteStore.site(from: "vps.example") {
+    GPTSiteStore.addCustomSite(customSite)
+    expect(
+        "Custom site page",
+        policy.decision(for: URL(string: "https://vps.example/"), context: context()),
+        .allowInApp
+    )
+    expect(
+        "Custom site subdomain",
+        policy.decision(for: URL(string: "https://chat.vps.example/"), context: context()),
+        .allowInApp
+    )
+    GPTSiteStore.removeCustomSite(customSite)
+    expect(
+        "Custom site removed is denied",
+        policy.decision(for: URL(string: "https://vps.example/"), context: context()),
+        .deny
+    )
+} else {
+    failures.append("Custom site parsing failed for vps.example")
+}
 expectUserAgentMode(
     "Google authentication compatibility UA",
     userAgentPolicy.configuration(
@@ -215,7 +291,7 @@ if standardConfiguration.platformOverride != "Linux armv81"
 }
 
         if failures.isEmpty {
-            print("ReynardGPT navigation and user-agent policies: 24 tests passed")
+            print("ReynardGPT navigation and user-agent policies: 36 tests passed")
         } else {
             failures.forEach { fputs("FAIL: \($0)\n", stderr) }
             exit(1)
