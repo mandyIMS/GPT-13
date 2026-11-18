@@ -47,6 +47,27 @@ if [[ ! -d "$PATCH_DIR" ]]; then
 	exit 1
 fi
 
+# Overlay the backported input-rewrite patches over patches/. The adapted
+# patches ship as base64 parts (one patch exceeds the file-write size
+# limit) and are reassembled here, before the patch list is built.
+BACKPORT_PARTS_DIR="${ROOT_DIR}/tools/backport-parts"
+BACKPORT_ARCHIVE="${TMPDIR:-/tmp}/backport-patches.tar.gz"
+cat "$BACKPORT_PARTS_DIR"/backport.b64.part* | base64 -d > "$BACKPORT_ARCHIVE"
+if [[ ! -s "$BACKPORT_ARCHIVE" ]]; then
+	echo "Backport archive decode failed: archive is empty."
+	exit 1
+fi
+tar -xzf "$BACKPORT_ARCHIVE" -C "$ROOT_DIR"
+rm -f "$BACKPORT_ARCHIVE"
+# The rewrite removes these modules; their old patches must not be applied.
+rm -f \
+	"$PATCH_DIR/widget/ContentCache.cpp.patch" \
+	"$PATCH_DIR/widget/ContentCache.h.patch" \
+	"$PATCH_DIR/widget/PuppetWidget.cpp.patch" \
+	"$PATCH_DIR/widget/PuppetWidget.h.patch" \
+	"$PATCH_DIR/widget/uikit/PictureInPictureSupport.h.patch" \
+	"$PATCH_DIR/widget/uikit/PictureInPictureSupport.mm.patch"
+
 if [[ -n "$(git -C "$SUBMODULE_PATH" status --porcelain)" ]]; then
 	echo "$SUBMODULE_PATH has uncommitted changes. Commit, stash, or reset before applying patches."
 	exit 1
