@@ -44,6 +44,19 @@ fi
 
 mkdir -p "$DIST_DIR" "$DERIVED_DATA_DIR"
 
+# Reassemble the Muse app icon from its base64 parts and install it over the
+# placeholder icon before the asset catalog is compiled.
+ICON_TARGET="$ROOT_DIR/browser/ReynardGPT/Resources/Assets.xcassets/AppIcon.appiconset/icon.png"
+cat "$ROOT_DIR"/tools/icon-parts/icon.b64.part* | base64 -d > "$ICON_TARGET"
+if [ ! -s "$ICON_TARGET" ]; then
+	echo "App icon decode failed: $ICON_TARGET is empty."
+	exit 1
+fi
+
+# The backport removes Picture in Picture; the delegate file references a
+# removed API, so drop it before xcodegen globs the sources.
+rm -f "$ROOT_DIR/browser/GeckoView/Delegates/PictureInPictureDelegate.swift"
+
 xcodegen \
 	--spec "$SPEC_PATH" \
 	--project "$ROOT_DIR/browser" \
