@@ -204,7 +204,7 @@ expect(
     "Cloudflare challenge from Gemini",
     policy.decision(
         for: URL(string: "https://challenges.cloudflare.com/turnstile/v0/"),
-        context: context(trigger: "https://gemini.google.com/", redirect: true)
+        context: context(redirect: true, trigger: "https://gemini.google.com/")
     ),
     .allowInApp
 )
