@@ -20,11 +20,111 @@ struct GPTNavigationContext: Equatable {
     let authenticationFlowActive: Bool
 }
 
-struct GPTNavigationPolicy {
-    static let homeURL = URL(string: "https://muse.ai/")!
+/// A website the app can open as its main page.
+struct GPTSite: Equatable, Hashable {
+    let name: String
+    let url: URL
 
-    private static let museHosts: Set<String> = [
+    var host: String {
+        return url.host?.lowercased() ?? ""
+    }
+}
+
+enum GPTSiteStore {
+    static let builtInSites: [GPTSite] = [
+        GPTSite(name: "Muse", url: URL(string: "https://muse.ai/")!),
+        GPTSite(name: "Claude", url: URL(string: "https://claude.ai/")!),
+        GPTSite(name: "Gemini", url: URL(string: "https://gemini.google.com/")!),
+        GPTSite(name: "Grok", url: URL(string: "https://grok.com/")!),
+    ]
+
+    private static let selectedSiteURLKey = "GPTSelectedSiteURL"
+    private static let customSiteURLsKey = "GPTCustomSiteURLs"
+    private static let defaults = UserDefaults.standard
+
+    static var customSites: [GPTSite] {
+        let stored = defaults.stringArray(forKey: customSiteURLsKey) ?? []
+        return stored.compactMap { string in
+            guard let url = URL(string: string), let host = url.host, !host.isEmpty else {
+                return nil
+            }
+            return GPTSite(name: host, url: url)
+        }
+    }
+
+    static var allSites: [GPTSite] {
+        return builtInSites + customSites
+    }
+
+    /// The site the app opens. Falls back to Muse when nothing is stored or
+    /// the stored site no longer exists (for example after it was deleted).
+    static var selectedSite: GPTSite {
+        if let stored = defaults.string(forKey: selectedSiteURLKey),
+           let storedHost = URL(string: stored)?.host?.lowercased(),
+           let site = allSites.first(where: { $0.host == storedHost }) {
+            return site
+        }
+        return builtInSites[0]
+    }
+
+    static func select(_ site: GPTSite) {
+        defaults.set(site.url.absoluteString, forKey: selectedSiteURLKey)
+    }
+
+    /// The built-in or custom site for a host, if one already exists.
+    static func existingSite(forHost host: String) -> GPTSite? {
+        let normalized = host.lowercased()
+        return allSites.first(where: { $0.host == normalized })
+    }
+
+    static func isCustomSite(_ site: GPTSite) -> Bool {
+        return customSites.contains(site)
+    }
+
+    /// Normalizes what the user typed into a site URL, or returns nil when it
+    /// has no host. A missing scheme defaults to https; an explicit scheme
+    /// (for example http for a self-hosted page) is kept as typed.
+    static func site(from input: String) -> GPTSite? {
+        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let withScheme = trimmed.contains("://") ? trimmed : "https://" + trimmed
+        guard let url = URL(string: withScheme),
+              let host = url.host, !host.isEmpty else {
+            return nil
+        }
+        return GPTSite(name: host, url: url)
+    }
+
+    static func addCustomSite(_ site: GPTSite) {
+        var urls = defaults.stringArray(forKey: customSiteURLsKey) ?? []
+        urls.removeAll { string in
+            URL(string: string)?.host?.lowercased() == site.host
+        }
+        urls.append(site.url.absoluteString)
+        defaults.set(urls, forKey: customSiteURLsKey)
+    }
+
+    static func removeCustomSite(_ site: GPTSite) {
+        var urls = defaults.stringArray(forKey: customSiteURLsKey) ?? []
+        urls.removeAll { $0 == site.url.absoluteString }
+        defaults.set(urls, forKey: customSiteURLsKey)
+    }
+
+    static var customHosts: Set<String> {
+        return Set(customSites.map { $0.host })
+    }
+}
+
+struct GPTNavigationPolicy {
+    static var homeURL: URL {
+        return GPTSiteStore.selectedSite.url
+    }
+
+    private static let builtInHosts: Set<String> = [
         "muse.ai",
+        "claude.ai",
+        "gemini.google.com",
+        "grok.com",
     ]
 
     private static let authenticationHosts: Set<String> = [
@@ -32,6 +132,7 @@ struct GPTNavigationPolicy {
         "appleid.apple.com",
         "login.live.com",
         "login.microsoftonline.com",
+        "x.com",
     ]
 
     private static let challengeHosts: Set<String> = [
@@ -53,8 +154,9 @@ struct GPTNavigationPolicy {
             return .deny
         }
 
-        // The restriction is deliberately top-level only. Muse relies on
-        // cross-origin APIs, scripts, frames, images and challenge resources.
+        // The restriction is deliberately top-level only. The selected site
+        // relies on cross-origin APIs, scripts, frames, images and challenge
+        // resources.
         guard context.isTopLevel else {
             return .allowInApp
         }
@@ -72,12 +174,12 @@ struct GPTNavigationPolicy {
             return .deny
         }
 
-        if isMuseHost(host) {
+        if isAllowedSiteHost(host) {
             return .allowInApp
         }
 
         if isAuthenticationHost(host) {
-            if context.authenticationFlowActive || beganFromMuse(context.triggerURL) {
+            if context.authenticationFlowActive || beganFromAllowedSite(context.triggerURL) {
                 return .allowInApp
             }
             return context.hasUserGesture ? .openExternally : .deny
@@ -109,15 +211,15 @@ struct GPTNavigationPolicy {
               let host = normalizedHost(url) else {
             return false
         }
-        return isMuseHost(host)
+        return isAllowedSiteHost(host)
     }
 
-    private func beganFromMuse(_ triggerURL: URL?) -> Bool {
+    private func beganFromAllowedSite(_ triggerURL: URL?) -> Bool {
         guard let triggerURL,
               let host = normalizedHost(triggerURL) else {
             return false
         }
-        return isMuseHost(host)
+        return isAllowedSiteHost(host)
     }
 
     private func beganFromTrustedFlow(_ triggerURL: URL?) -> Bool {
@@ -125,7 +227,7 @@ struct GPTNavigationPolicy {
               let host = normalizedHost(triggerURL) else {
             return false
         }
-        return isMuseHost(host) || isAuthenticationHost(host) || isChallengeHost(host)
+        return isAllowedSiteHost(host) || isAuthenticationHost(host) || isChallengeHost(host)
     }
 
     private func normalizedHost(_ url: URL) -> String? {
@@ -136,8 +238,19 @@ struct GPTNavigationPolicy {
         return host
     }
 
-    private func isMuseHost(_ host: String) -> Bool {
-        Self.museHosts.contains(host) || host.hasSuffix(".muse.ai")
+    private func isAllowedSiteHost(_ host: String) -> Bool {
+        return isBuiltInHost(host) || isCustomHost(host)
+    }
+
+    private func isBuiltInHost(_ host: String) -> Bool {
+        return Self.builtInHosts.contains(host)
+            || Self.builtInHosts.contains { host.hasSuffix("." + $0) }
+    }
+
+    private func isCustomHost(_ host: String) -> Bool {
+        let custom = GPTSiteStore.customHosts
+        return custom.contains(host)
+            || custom.contains { host.hasSuffix("." + $0) }
     }
 
     private func isAuthenticationHost(_ host: String) -> Bool {
