@@ -271,10 +271,20 @@ final class GPTBrowserViewController: UIViewController {
                 // The pending reset runs at the very beginning of the next
                 // launch, before Gecko opens its profile.
                 exit(EXIT_SUCCESS)
+            },
+            onSiteSelected: { [weak self] url in
+                self?.switchToSite(url)
             }
         )
         let navigation = UINavigationController(rootViewController: settings)
         present(navigation, animated: true)
+    }
+
+    private func switchToSite(_ url: URL) {
+        authenticationFlowActive = false
+        currentURL = url
+        updateUserAgent(for: url)
+        session.load(url.absoluteString)
     }
 
     private func navigationContext(
