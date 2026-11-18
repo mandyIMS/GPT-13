@@ -134,27 +134,43 @@ trap cleanup EXIT
 	fi
 } > "$MOZCONFIG_PATH"
 
-# Resolve the Rust toolchain from inside the Firefox tree so
-# rust-toolchain.toml governs: `rustup which rustc` (used by configure)
-# does not auto-install, and the toolchain pinned by the source tree may
-# differ from the runner's default. Install the pinned channel when it is
-# missing, then add the iOS target for that toolchain. The subshell keeps
-# the working directory unchanged.
-(
-	cd "$FIREFOX_DIR"
-	if ! rustup which rustc >/dev/null 2>&1; then
-		echo "Rust toolchain for this source tree is not installed; installing it."
-		pinned_channel="$(sed -n 's/^[[:space:]]*channel[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' rust-toolchain.toml 2>/dev/null | head -n 1)"
-		if [ -n "${pinned_channel:-}" ]; then
-			rustup toolchain install "$pinned_channel"
-		else
-			rustup toolchain install
-		fi
+# Resolve Rust from inside the Firefox tree so rust-toolchain.toml governs.
+# `rustup which` does not auto-install, and the toolchain pinned by the
+# source tree may differ from the runner's default, so install the pinned
+# channel when it is missing, then add the iOS target for that toolchain.
+# Export the resolved real rustc/cargo paths: configure's rustup-wrapper
+# detection (unwrap_rustup in build/moz.configure/rust.configure) runs the
+# detected program with argv[0]="rustup", which misfires when the detected
+# program is a plain rustc; explicit real paths avoid the wrapper probe.
+cd "$FIREFOX_DIR"
+if ! rustup which rustc >/dev/null 2>&1; then
+	echo "Rust toolchain for this source tree is not installed; installing it."
+	pinned_channel="$(sed -n 's/^[[:space:]]*channel[[:space:]]*=[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' rust-toolchain.toml 2>/dev/null | head -n 1)"
+	if [ -n "${pinned_channel:-}" ]; then
+		rustup toolchain install "$pinned_channel"
+	else
+		rustup toolchain install
 	fi
-	if ! rustup target list | grep -q "^$TARGET (installed)"; then
-		rustup target add "$TARGET"
-	fi
-)
+fi
+if ! rustup target list | grep -q "^$TARGET (installed)"; then
+	rustup target add "$TARGET"
+fi
+RUSTC_RESOLVED="$(rustup which rustc 2>/dev/null || true)"
+CARGO_RESOLVED="$(rustup which cargo 2>/dev/null || true)"
+if [ -z "${RUSTC_RESOLVED:-}" ] || [ -z "${CARGO_RESOLVED:-}" ]; then
+	echo "Could not resolve rustc/cargo via rustup; refusing to guess."
+	rustup show || true
+	exit 1
+fi
+export RUSTC="$RUSTC_RESOLVED"
+export CARGO="$CARGO_RESOLVED"
+echo "Rust for mach: $RUSTC ($($RUSTC --version 2>&1))"
+echo "Cargo for mach: $CARGO ($($CARGO --version 2>&1))"
+probe_out="$("$RUSTC" +stable 2>&1 || true)"
+case "$probe_out" in
+	*"+stable"*) echo "rustc +stable probe: filename reported (configure detection should pass)" ;;
+	*) echo "rustc +stable probe: filename NOT reported (configure detection may misfire)" ;;
+esac
 
 cd "$FIREFOX_DIR"
 # CI probe mode: REYNARD_CONFIGURE_ONLY=1 runs configure without building,
