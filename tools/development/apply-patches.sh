@@ -63,9 +63,15 @@ rm -f "$BACKPORT_ARCHIVE"
 # be applied. (ContentCache/PuppetWidget were restored: the August
 # APZCCallbackHelper patch calls PuppetWidget::AdjustIMECacheForScroll,
 # which lives in those patches.)
+# The gfx/layers PiP files are the same removal: NativeLayerCA.h no longer
+# declares the PiP methods, so the PiP implementation file must not be
+# created, and moz.build must not list it (that patch's only change is the
+# PiP line). Run #24 failed with 20 errors from exactly these two files.
 rm -f \
 	"$PATCH_DIR/widget/uikit/PictureInPictureSupport.h.patch" \
-	"$PATCH_DIR/widget/uikit/PictureInPictureSupport.mm.patch"
+	"$PATCH_DIR/widget/uikit/PictureInPictureSupport.mm.patch" \
+	"$PATCH_DIR/gfx/layers/NativeLayerCAPictureInPicture.mm.patch" \
+	"$PATCH_DIR/gfx/layers/moz.build.patch"
 
 if [[ -n "$(git -C "$SUBMODULE_PATH" status --porcelain)" ]]; then
 	echo "$SUBMODULE_PATH has uncommitted changes. Commit, stash, or reset before applying patches."
