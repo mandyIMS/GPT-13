@@ -59,12 +59,11 @@ if [[ ! -s "$BACKPORT_ARCHIVE" ]]; then
 fi
 tar -xzf "$BACKPORT_ARCHIVE" -C "$ROOT_DIR"
 rm -f "$BACKPORT_ARCHIVE"
-# The rewrite removes these modules; their old patches must not be applied.
+# The rewrite removes Picture-in-Picture support; its old patches must not
+# be applied. (ContentCache/PuppetWidget were restored: the August
+# APZCCallbackHelper patch calls PuppetWidget::AdjustIMECacheForScroll,
+# which lives in those patches.)
 rm -f \
-	"$PATCH_DIR/widget/ContentCache.cpp.patch" \
-	"$PATCH_DIR/widget/ContentCache.h.patch" \
-	"$PATCH_DIR/widget/PuppetWidget.cpp.patch" \
-	"$PATCH_DIR/widget/PuppetWidget.h.patch" \
 	"$PATCH_DIR/widget/uikit/PictureInPictureSupport.h.patch" \
 	"$PATCH_DIR/widget/uikit/PictureInPictureSupport.mm.patch"
 
