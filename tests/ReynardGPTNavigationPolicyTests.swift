@@ -202,6 +202,32 @@ expect(
     .allowInApp
 )
 expect(
+    "Claude login",
+    policy.decision(
+        for: URL(string: "https://auth.anthropic.com/"),
+        context: context(trigger: "https://claude.ai/")
+    ),
+    .allowInApp
+)
+expect(
+    "Claude subdomain",
+    policy.decision(for: URL(string: "https://support.claude.com/"), context: context()),
+    .allowInApp
+)
+expect(
+    "GitHub Pages",
+    policy.decision(for: URL(string: "https://mandyims.github.io/"), context: context()),
+    .allowInApp
+)
+expect(
+    "GitHub raw file",
+    policy.decision(
+        for: URL(string: "https://raw.githubusercontent.com/mandyIMS/GPT-13/main/README.md"),
+        context: context()
+    ),
+    .allowInApp
+)
+expect(
     "Grok login via X from Grok",
     policy.decision(
         for: URL(string: "https://x.com/i/flow/login"),
@@ -316,7 +342,7 @@ if standardConfiguration.platformOverride != "Linux armv81"
 }
 
         if failures.isEmpty {
-            print("ReynardGPT navigation and user-agent policies: 41 tests passed")
+            print("ReynardGPT navigation and user-agent policies: 45 tests passed")
         } else {
             failures.forEach { fputs("FAIL: \($0)\n", stderr) }
             exit(1)
