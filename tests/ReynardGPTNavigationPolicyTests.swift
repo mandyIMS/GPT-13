@@ -341,8 +341,40 @@ if standardConfiguration.platformOverride != "Linux armv81"
     failures.append("Standard navigator overrides do not match Reynard")
 }
 
+if GPTDeepLink.site(for: URL(string: "muse13v2://muse.ai")!)?.name != "Muse" {
+    failures.append("Deep link to Muse does not resolve to the Muse site")
+}
+if GPTDeepLink.site(for: URL(string: "muse13v2://claude.ai")!)?.name != "Claude" {
+    failures.append("Deep link to Claude does not resolve to the Claude site")
+}
+if GPTDeepLink.site(for: URL(string: "muse13v2://gemini.google.com")!)?.name != "Gemini" {
+    failures.append("Deep link to Gemini does not resolve to the Gemini site")
+}
+if GPTDeepLink.site(for: URL(string: "muse13v2://www.chatgpt.com")!)?.name != "ChatGPT" {
+    failures.append("Deep link with a www. prefix does not resolve to the ChatGPT site")
+}
+if GPTDeepLink.site(for: URL(string: "muse13v2://example.com")!) != nil {
+    failures.append("Deep link to an unknown host should be ignored")
+}
+if GPTDeepLink.site(for: URL(string: "https://claude.ai/")!) != nil {
+    failures.append("An https URL is not a deep link")
+}
+if GPTSiteStore.defaultSite(forDefaultURLString: "https://claude.ai/")?.name != "Claude" {
+    failures.append("Baked-in default site does not resolve to the Claude site")
+}
+if GPTSiteStore.defaultSite(forDefaultURLString: "https://chatgpt.com/chat")?.name != "ChatGPT" {
+    failures.append("Baked-in default site does not match by host")
+}
+if GPTSiteStore.defaultSite(forDefaultURLString: "https://example.com/") != nil {
+    failures.append("Baked-in default site for an unknown host should be ignored")
+}
+if GPTSiteStore.defaultSite(forDefaultURLString: nil) != nil
+    || GPTSiteStore.defaultSite(forDefaultURLString: "not a url") != nil {
+    failures.append("Baked-in default site should ignore missing or bad values")
+}
+
         if failures.isEmpty {
-            print("ReynardGPT navigation and user-agent policies: 45 tests passed")
+            print("ReynardGPT navigation and user-agent policies: 55 tests passed")
         } else {
             failures.forEach { fputs("FAIL: \($0)\n", stderr) }
             exit(1)
