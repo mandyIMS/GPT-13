@@ -51,6 +51,7 @@ final class GPTBrowserViewController: UIViewController {
     )
     private var currentURL = GPTNavigationPolicy.homeURL
     private var lastExternalOpen: (url: URL, date: Date)?
+    private var lastNewWindowLoad: (url: URL, date: Date)?
 
     private lazy var backItem = UIBarButtonItem(
         image: UIImage(systemName: "chevron.backward"),
@@ -351,6 +352,53 @@ final class GPTBrowserViewController: UIViewController {
         UIApplication.shared.open(url, options: [:])
     }
 
+    /// Handles a link that asks for a new window (for example a link in the
+    /// chat that opens with target _blank). New-window requests must be
+    /// handled by the app itself: letting Gecko continue one on its own can
+    /// hand the URL to the system browser, even for a whitelisted site.
+    /// Returning .deny tells Gecko the request is fully handled.
+    private func handleNewWindow(
+        url: URL?,
+        context: GPTNavigationContext
+    ) -> AllowOrDeny {
+        switch policy.decision(for: url, context: context) {
+        case .allowInApp:
+            updateUserAgent(for: url)
+            if policy.beginsAuthenticationFlow(url) {
+                authenticationFlowActive = true
+            }
+            loadNewWindowURLOnce(url)
+            return .deny
+        case .openExternally:
+            if let url {
+                openInDefaultBrowserOnce(url)
+            }
+            return .deny
+        case .deny:
+            return .deny
+        }
+    }
+
+    /// Loads a new-window URL in the current tab, once per URL per second.
+    /// The load is deferred to the next run-loop turn so it is not cancelled
+    /// together with the popup request that asked for the new window.
+    private func loadNewWindowURLOnce(_ url: URL?) {
+        guard let url,
+              let scheme = url.scheme?.lowercased(),
+              scheme == "http" || scheme == "https" else {
+            return
+        }
+        if let lastNewWindowLoad,
+           lastNewWindowLoad.url == url,
+           Date().timeIntervalSince(lastNewWindowLoad.date) < 1 {
+            return
+        }
+        lastNewWindowLoad = (url, Date())
+        DispatchQueue.main.async { [weak self] in
+            self?.session.load(url.absoluteString)
+        }
+    }
+
     private func confirm(title: String, message: String?) async -> Bool {
         await withCheckedContinuation { continuation in
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -380,17 +428,27 @@ extension GPTBrowserViewController: NavigationDelegate {
     }
 
     func onLoadRequest(session: GeckoSession, request: LoadRequest) async -> AllowOrDeny {
-        evaluate(
-            url: URL(string: request.uri),
-            context: navigationContext(for: request),
+        let url = URL(string: request.uri)
+        let context = navigationContext(for: request)
+        if context.target == .newWindow {
+            return handleNewWindow(url: url, context: context)
+        }
+        return evaluate(
+            url: url,
+            context: context,
             openExternal: true
         )
     }
 
     func onPreNavigation(session: GeckoSession, request: LoadRequest) async -> AllowOrDeny {
-        evaluate(
-            url: URL(string: request.uri),
-            context: navigationContext(for: request),
+        let url = URL(string: request.uri)
+        let context = navigationContext(for: request)
+        if context.target == .newWindow {
+            return handleNewWindow(url: url, context: context)
+        }
+        return evaluate(
+            url: url,
+            context: context,
             openExternal: true
         )
     }
@@ -420,7 +478,7 @@ extension GPTBrowserViewController: NavigationDelegate {
             if policy.beginsAuthenticationFlow(url) {
                 authenticationFlowActive = true
             }
-            self.session.load(uri)
+            loadNewWindowURLOnce(url)
         case .openExternally:
             if let url { openInDefaultBrowserOnce(url) }
         case .deny:
