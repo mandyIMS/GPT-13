@@ -37,6 +37,7 @@ enum GPTSiteStore {
         GPTSite(name: "Gemini", url: URL(string: "https://gemini.google.com/")!),
         GPTSite(name: "Grok", url: URL(string: "https://grok.com/")!),
         GPTSite(name: "GitHub", url: URL(string: "https://github.com/")!),
+        GPTSite(name: "ChatGPT", url: URL(string: "https://chatgpt.com/")!),
     ]
 
     private static let selectedSiteURLKey = "GPTSelectedSiteURL"
@@ -127,6 +128,8 @@ struct GPTNavigationPolicy {
         "gemini.google.com",
         "grok.com",
         "github.com",
+        "chatgpt.com",
+        "chat.openai.com",
     ]
 
     private static let authenticationHosts: Set<String> = [
@@ -135,6 +138,8 @@ struct GPTNavigationPolicy {
         "login.live.com",
         "login.microsoftonline.com",
         "x.com",
+        "auth.openai.com",
+        "auth0.openai.com",
     ]
 
     private static let challengeHosts: Set<String> = [
