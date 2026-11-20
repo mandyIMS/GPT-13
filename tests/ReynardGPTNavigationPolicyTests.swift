@@ -177,6 +177,16 @@ expect(
     .allowInApp
 )
 expect(
+    "GitHub page",
+    policy.decision(for: URL(string: "https://github.com/"), context: context()),
+    .allowInApp
+)
+expect(
+    "GitHub subdomain",
+    policy.decision(for: URL(string: "https://gist.github.com/"), context: context()),
+    .allowInApp
+)
+expect(
     "Grok login via X from Grok",
     policy.decision(
         for: URL(string: "https://x.com/i/flow/login"),
@@ -291,7 +301,7 @@ if standardConfiguration.platformOverride != "Linux armv81"
 }
 
         if failures.isEmpty {
-            print("ReynardGPT navigation and user-agent policies: 36 tests passed")
+            print("ReynardGPT navigation and user-agent policies: 38 tests passed")
         } else {
             failures.forEach { fputs("FAIL: \($0)\n", stderr) }
             exit(1)
