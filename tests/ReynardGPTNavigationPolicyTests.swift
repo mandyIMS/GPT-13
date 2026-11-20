@@ -187,6 +187,21 @@ expect(
     .allowInApp
 )
 expect(
+    "ChatGPT page",
+    policy.decision(for: URL(string: "https://chatgpt.com/"), context: context()),
+    .allowInApp
+)
+expect(
+    "ChatGPT subdomain",
+    policy.decision(for: URL(string: "https://chat.openai.com/"), context: context()),
+    .allowInApp
+)
+expect(
+    "ChatGPT login",
+    policy.decision(for: URL(string: "https://auth.openai.com/"), context: context()),
+    .allowInApp
+)
+expect(
     "Grok login via X from Grok",
     policy.decision(
         for: URL(string: "https://x.com/i/flow/login"),
@@ -301,7 +316,7 @@ if standardConfiguration.platformOverride != "Linux armv81"
 }
 
         if failures.isEmpty {
-            print("ReynardGPT navigation and user-agent policies: 38 tests passed")
+            print("ReynardGPT navigation and user-agent policies: 41 tests passed")
         } else {
             failures.forEach { fputs("FAIL: \($0)\n", stderr) }
             exit(1)
