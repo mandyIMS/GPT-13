@@ -36,6 +36,7 @@ enum GPTSiteStore {
         GPTSite(name: "Claude", url: URL(string: "https://claude.ai/")!),
         GPTSite(name: "Gemini", url: URL(string: "https://gemini.google.com/")!),
         GPTSite(name: "Grok", url: URL(string: "https://grok.com/")!),
+        GPTSite(name: "GitHub", url: URL(string: "https://github.com/")!),
     ]
 
     private static let selectedSiteURLKey = "GPTSelectedSiteURL"
@@ -125,6 +126,7 @@ struct GPTNavigationPolicy {
         "claude.ai",
         "gemini.google.com",
         "grok.com",
+        "github.com",
     ]
 
     private static let authenticationHosts: Set<String> = [
