@@ -125,9 +125,12 @@ struct GPTNavigationPolicy {
     private static let builtInHosts: Set<String> = [
         "muse.ai",
         "claude.ai",
+        "claude.com",
         "gemini.google.com",
         "grok.com",
         "github.com",
+        "github.io",
+        "githubusercontent.com",
         "chatgpt.com",
         "chat.openai.com",
     ]
@@ -140,6 +143,7 @@ struct GPTNavigationPolicy {
         "x.com",
         "auth.openai.com",
         "auth0.openai.com",
+        "auth.anthropic.com",
     ]
 
     private static let challengeHosts: Set<String> = [
