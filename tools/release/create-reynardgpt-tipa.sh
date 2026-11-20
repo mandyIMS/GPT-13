@@ -77,3 +77,12 @@ fi
 )
 
 echo "Created TrollStore package: $OUTPUT_PATH"
+
+# Per-site variants (Claude, Gemini, Grok, GitHub, ChatGPT) are built from
+# this finished package. Best effort: the variants script warns and skips
+# on failure, and must never fail the main package. Called with `sh`
+# because files created through the GitHub API have no executable bit.
+if [ -f "$ROOT_DIR/tools/release/create-site-variants.sh" ]; then
+	sh "$ROOT_DIR/tools/release/create-site-variants.sh" \
+		|| echo "WARNING: site variants step failed; main package is unaffected."
+fi
