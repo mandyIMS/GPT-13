@@ -58,15 +58,36 @@ enum GPTSiteStore {
         return builtInSites + customSites
     }
 
-    /// The site the app opens. Falls back to Muse when nothing is stored or
-    /// the stored site no longer exists (for example after it was deleted).
+    /// The site the app opens. A stored selection wins; otherwise the
+    /// build's baked-in default site (Info.plist `GPTDefaultSiteURL`) is
+    /// used; otherwise it falls back to Muse. A stored site that no longer
+    /// exists (for example after it was deleted) is ignored.
     static var selectedSite: GPTSite {
         if let stored = defaults.string(forKey: selectedSiteURLKey),
            let storedHost = URL(string: stored)?.host?.lowercased(),
            let site = allSites.first(where: { $0.host == storedHost }) {
             return site
         }
+        if let baked = defaultSite(
+            forDefaultURLString: Bundle.main.object(forInfoDictionaryKey: "GPTDefaultSiteURL") as? String
+        ) {
+            return baked
+        }
         return builtInSites[0]
+    }
+
+    /// The site baked into this build via Info.plist `GPTDefaultSiteURL`,
+    /// if it names a site the app knows. Each per-site variant sets it so
+    /// it opens to its own site on first launch. Unknown hosts and bad
+    /// values return nil and the app falls back to Muse. A baked-in custom
+    /// URL only resolves once that custom site exists in the app's list.
+    static func defaultSite(forDefaultURLString string: String?) -> GPTSite? {
+        guard let string,
+              let host = URL(string: string)?.host?.lowercased(),
+              !host.isEmpty else {
+            return nil
+        }
+        return allSites.first(where: { $0.host == host })
     }
 
     static func select(_ site: GPTSite) {
@@ -114,6 +135,26 @@ enum GPTSiteStore {
 
     static var customHosts: Set<String> {
         return Set(customSites.map { $0.host })
+    }
+}
+
+/// Deep links of the form `muse13v2://<host>`, opened from a Home Screen
+/// shortcut, jump straight to one of the app's sites (built-in or custom).
+/// Unknown hosts are ignored: the app stays on the current site and nothing
+/// is added to the site list.
+enum GPTDeepLink {
+    static let scheme = "muse13v2"
+
+    static func site(for url: URL) -> GPTSite? {
+        guard url.scheme?.lowercased() == scheme,
+              var host = url.host?.lowercased(),
+              !host.isEmpty else {
+            return nil
+        }
+        if host.hasPrefix("www.") {
+            host = String(host.dropFirst("www.".count))
+        }
+        return GPTSiteStore.existingSite(forHost: host)
     }
 }
 
