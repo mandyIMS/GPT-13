@@ -50,8 +50,16 @@ final class GPTBrowserViewController: UIViewController {
         geckoVersion: GeckoRuntime.version
     )
     private var currentURL = GPTNavigationPolicy.homeURL
+    /// Deep link the app was launched with, if any. Applied once as the
+    /// initial page instead of the selected site.
+    var launchDeepLinkURL: URL?
     private var lastExternalOpen: (url: URL, date: Date)?
     private var lastNewWindowLoad: (url: URL, date: Date)?
+    /// Background sessions handed to the engine for new-window requests.
+    /// They keep the engine from handing the URL to the system browser;
+    /// the page itself is shown in the current tab instead. Closed after
+    /// a delay so they do not pile up.
+    private var popupSessions: [GeckoSession] = []
 
     private lazy var backItem = UIBarButtonItem(
         image: UIImage(systemName: "chevron.backward"),
@@ -224,6 +232,10 @@ final class GPTBrowserViewController: UIViewController {
         session.selectionActionDelegate = selectionController
         session.open()
         geckoView.session = session
+        if let launchURL = launchDeepLinkURL,
+           let site = GPTDeepLink.site(for: launchURL) {
+            GPTSiteStore.select(site)
+        }
         let initialURL = ProcessInfo.processInfo.environment["REYNARD_UI_TEST_URL"]
             ?? GPTNavigationPolicy.homeURL.absoluteString
         if let url = URL(string: initialURL) {
@@ -288,6 +300,19 @@ final class GPTBrowserViewController: UIViewController {
         session.load(url.absoluteString)
     }
 
+    /// Opens a `muse13v2://<host>` deep link from a Home Screen shortcut.
+    /// Unknown hosts are ignored. When the view has not loaded yet, the
+    /// link is kept and applied as the initial page instead.
+    func openDeepLink(_ url: URL) {
+        guard let site = GPTDeepLink.site(for: url) else { return }
+        guard isViewLoaded else {
+            launchDeepLinkURL = url
+            return
+        }
+        GPTSiteStore.select(site)
+        switchToSite(site.url)
+    }
+
     private func navigationContext(
         for request: LoadRequest,
         topLevel: Bool = true
@@ -297,7 +322,11 @@ final class GPTBrowserViewController: UIViewController {
             target: request.target == .current ? .current : .newWindow,
             hasUserGesture: request.hasUserGesture || request.isUserInitiatedNavigation,
             isRedirect: request.isRedirect,
-            triggerURL: request.triggerUri.flatMap(URL.init(string:)),
+            // Redirects sometimes carry no trigger URL; the page the user
+            // is actually on is the honest "from" site (login redirects
+            // to an auth host would otherwise be denied as coming from
+            // nowhere and show a blank page).
+            triggerURL: request.triggerUri.flatMap(URL.init(string:)) ?? currentURL,
             authenticationFlowActive: authenticationFlowActive
         )
     }
@@ -415,6 +444,7 @@ final class GPTBrowserViewController: UIViewController {
 
 extension GPTBrowserViewController: NavigationDelegate {
     func onLocationChange(session: GeckoSession, url: String?, permissions: [ContentPermission]) {
+        guard session === self.session else { return }
         guard let url = url.flatMap(URL.init(string:)) else { return }
         currentURL = url
         updateUserAgent(for: url)
@@ -424,10 +454,14 @@ extension GPTBrowserViewController: NavigationDelegate {
     }
 
     func onCanGoBack(session: GeckoSession, canGoBack: Bool) {
+        guard session === self.session else { return }
         backItem.isEnabled = canGoBack
     }
 
     func onLoadRequest(session: GeckoSession, request: LoadRequest) async -> AllowOrDeny {
+        if session !== self.session {
+            return routePopupRequest(request)
+        }
         let url = URL(string: request.uri)
         let context = navigationContext(for: request)
         if context.target == .newWindow {
@@ -441,6 +475,9 @@ extension GPTBrowserViewController: NavigationDelegate {
     }
 
     func onPreNavigation(session: GeckoSession, request: LoadRequest) async -> AllowOrDeny {
+        if session !== self.session {
+            return routePopupRequest(request)
+        }
         let url = URL(string: request.uri)
         let context = navigationContext(for: request)
         if context.target == .newWindow {
@@ -478,27 +515,78 @@ extension GPTBrowserViewController: NavigationDelegate {
             if policy.beginsAuthenticationFlow(url) {
                 authenticationFlowActive = true
             }
+            // The engine needs a real session for a new window. Returning
+            // nil made it hand the URL to the system browser, even for a
+            // whitelisted site. Hand it a background session (its
+            // navigations are routed to the visible tab by
+            // routePopupRequest, so popup logins and links are visible
+            // and usable) and show the page in the current tab instead.
+            let popup = makeReynardGPTInitialSession()
+            popup.navigationDelegate = self
+            popupSessions.append(popup)
             loadNewWindowURLOnce(url)
+            closePopupSessionAfterDelay(popup)
+            return popup
         case .openExternally:
             if let url { openInDefaultBrowserOnce(url) }
+            return nil
         case .deny:
-            break
+            return nil
         }
-        return nil
+    }
+
+    private func closePopupSessionAfterDelay(_ popup: GeckoSession) {
+        Task { [weak self] in
+            try? await Task.sleep(for: .seconds(30))
+            popup.close()
+            self?.popupSessions.removeAll { $0 === popup }
+        }
+    }
+
+    /// A navigation inside a background (popup) session: show it in the
+    /// visible tab instead, so popup logins and popup links are visible
+    /// and usable rather than loading in an invisible session (which
+    /// looks like a blank page). Always denied in the popup itself.
+    private func routePopupRequest(_ request: LoadRequest) -> AllowOrDeny {
+        let url = URL(string: request.uri)
+        let context = navigationContext(for: request)
+        guard context.isTopLevel,
+              let url,
+              let scheme = url.scheme?.lowercased(),
+              scheme == "http" || scheme == "https" else {
+            return .deny
+        }
+        switch policy.decision(for: url, context: context) {
+        case .allowInApp:
+            updateUserAgent(for: url)
+            if policy.beginsAuthenticationFlow(url) {
+                authenticationFlowActive = true
+            }
+            loadNewWindowURLOnce(url)
+            return .deny
+        case .openExternally:
+            openInDefaultBrowserOnce(url)
+            return .deny
+        case .deny:
+            return .deny
+        }
     }
 }
 
 extension GPTBrowserViewController: ProgressDelegate {
     func onPageStart(session: GeckoSession, url: String) {
+        guard session === self.session else { return }
         progressView.isHidden = false
         progressView.progress = 0.05
     }
 
     func onProgressChange(session: GeckoSession, progress: Int) {
+        guard session === self.session else { return }
         progressView.setProgress(Float(progress) / 100, animated: true)
     }
 
     func onPageStop(session: GeckoSession, success: Bool) {
+        guard session === self.session else { return }
         progressView.setProgress(1, animated: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             self?.progressView.isHidden = true
