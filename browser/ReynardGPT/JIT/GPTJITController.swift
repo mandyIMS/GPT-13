@@ -21,7 +21,7 @@ final class GPTJITController {
     static let shared = GPTJITController()
 
     private let queue = DispatchQueue(
-        label: "com.mandyims.muse13v2.jit",
+        label: "com.mandyims.muse13v3.jit",
         qos: .userInitiated
     )
     private let stateLock = NSLock()
