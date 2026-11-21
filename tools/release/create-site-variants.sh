@@ -103,13 +103,24 @@ rebuild_icon_catalog() {
 JSON
     out="$work/actool-out"
     mkdir -p "$out"
+    # Mirror the flags xcodebuild passes when it compiles the main app's
+    # catalog (see a build log): actool needs the target devices to know
+    # which icon slots to build. Keep actool's output so a failure is
+    # visible in the log instead of a bare skip.
     if ! xcrun actool --compile "$out" --platform iphoneos \
             --minimum-deployment-target 13.0 \
-            --app-icon AppIcon --include-all-app-icons \
-            "$xcassets" >/dev/null 2>&1; then
+            --target-device iphone --target-device ipad \
+            --output-format human-readable-text \
+            --output-partial-info-plist "$work/actool-info.plist" \
+            --app-icon AppIcon --include-all-app-icons --compress-pngs \
+            "$xcassets" > "$work/actool.log" 2>&1; then
+        warn "$display: icon catalog rebuild failed"
+        cat "$work/actool.log" >&2
         return 1
     fi
     if [ ! -f "$out/Assets.car" ]; then
+        warn "$display: icon catalog rebuild produced no Assets.car"
+        cat "$work/actool.log" >&2
         return 1
     fi
     printf '%s' "$out"
