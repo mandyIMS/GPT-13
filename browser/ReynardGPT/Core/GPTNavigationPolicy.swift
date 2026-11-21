@@ -241,10 +241,17 @@ struct GPTNavigationPolicy {
             return beganFromTrustedFlow(context.triggerURL) ? .allowInApp : .deny
         }
 
-        // A link explicitly activated by the user is safe to hand to the
-        // system browser. Silent redirects to an unrelated site are blocked.
+        // A link the user tapped, or a new window they asked for, opens in
+        // the app, whatever site it points to. A redirect chain that is part
+        // of a login flow and started on one of the app's sites (or a login
+        // host) also stays in the app, so a login that passes through extra
+        // hosts does not end on a blank page. Only a silent redirect from
+        // somewhere else is blocked.
         if context.hasUserGesture || context.target == .newWindow {
-            return .openExternally
+            return .allowInApp
+        }
+        if context.authenticationFlowActive && beganFromTrustedFlow(context.triggerURL) {
+            return .allowInApp
         }
 
         return .deny
