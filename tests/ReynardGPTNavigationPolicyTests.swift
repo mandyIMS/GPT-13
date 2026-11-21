@@ -94,28 +94,28 @@ expect(
     .deny
 )
 expect(
-    "External reference click",
+    "External reference click opens in app",
     policy.decision(
         for: URL(string: "https://example.org/reference"),
         context: context(gesture: true)
     ),
-    .openExternally
+    .allowInApp
 )
 expect(
-    "target blank external link",
+    "target blank external link opens in app",
     policy.decision(
         for: URL(string: "https://example.org/new-window"),
         context: context(target: .newWindow, gesture: true)
     ),
-    .openExternally
+    .allowInApp
 )
 expect(
-    "window.open external link",
+    "window.open external link opens in app",
     policy.decision(
         for: URL(string: "https://example.org/script-window"),
         context: context(target: .newWindow, gesture: false)
     ),
-    .openExternally
+    .allowInApp
 )
 expect(
     "window.open Muse",
@@ -153,6 +153,22 @@ expect(
     policy.decision(
         for: URL(string: "https://malicious.example/redirect"),
         context: context(redirect: true)
+    ),
+    .deny
+)
+expect(
+    "Login redirect chain through an extra host stays in app",
+    policy.decision(
+        for: URL(string: "https://app.anthropic.com/oauth/authorize"),
+        context: context(redirect: true, trigger: "https://auth.anthropic.com/", auth: true)
+    ),
+    .allowInApp
+)
+expect(
+    "Login redirect chain without auth flag is blocked",
+    policy.decision(
+        for: URL(string: "https://app.anthropic.com/oauth/authorize"),
+        context: context(redirect: true, trigger: "https://auth.anthropic.com/", auth: false)
     ),
     .deny
 )
@@ -341,6 +357,32 @@ if standardConfiguration.platformOverride != "Linux armv81"
     failures.append("Standard navigator overrides do not match Reynard")
 }
 
+let gitHubConfiguration = userAgentPolicy.configuration(
+    for: URL(string: "https://github.com/"),
+    geckoVersion: "153.0"
+)
+if gitHubConfiguration.userAgentOverride?.contains("Safari/604.1") != true
+    || gitHubConfiguration.platformOverride != "iPhone"
+    || gitHubConfiguration.oscpuOverride != "iPhone OS 16_1_2" {
+    failures.append("GitHub UA does not identify as Safari on iPhone")
+}
+
+let gitHubSubdomainConfiguration = userAgentPolicy.configuration(
+    for: URL(string: "https://gist.github.com/"),
+    geckoVersion: "153.0"
+)
+if gitHubSubdomainConfiguration.userAgentOverride?.contains("Safari/604.1") != true {
+    failures.append("GitHub subdomain UA does not identify as Safari on iPhone")
+}
+
+let lookalikeGitHubConfiguration = userAgentPolicy.configuration(
+    for: URL(string: "https://github.com.example.org/"),
+    geckoVersion: "153.0"
+)
+if lookalikeGitHubConfiguration.userAgentOverride?.contains("Safari/604.1") == true {
+    failures.append("Lookalike GitHub host must not use the Safari UA")
+}
+
 if GPTDeepLink.site(for: URL(string: "muse13v3://muse.ai")!)?.name != "Muse" {
     failures.append("Deep link to Muse does not resolve to the Muse site")
 }
@@ -374,7 +416,7 @@ if GPTSiteStore.defaultSite(forDefaultURLString: nil) != nil
 }
 
         if failures.isEmpty {
-            print("ReynardGPT navigation and user-agent policies: 55 tests passed")
+            print("ReynardGPT navigation and user-agent policies: 60 tests passed")
         } else {
             failures.forEach { fputs("FAIL: \($0)\n", stderr) }
             exit(1)
