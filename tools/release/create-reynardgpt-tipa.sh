@@ -47,8 +47,8 @@ if [ ! -f "$PAYLOAD_APP/ReynardGPT" ] || [ ! -f "$HELPER_BINARY" ]; then
 	exit 1
 fi
 
-plutil -replace CFBundleIdentifier -string com.mandyims.muse13v2 "$PAYLOAD_APP/Info.plist"
-plutil -replace CFBundleIdentifier -string com.mandyims.muse13v2.helper "$HELPER_APP/Info.plist"
+plutil -replace CFBundleIdentifier -string com.mandyims.muse13v3 "$PAYLOAD_APP/Info.plist"
+plutil -replace CFBundleIdentifier -string com.mandyims.muse13v3.helper "$HELPER_APP/Info.plist"
 
 "$CLANG_PATH" \
 	-arch arm64 \
