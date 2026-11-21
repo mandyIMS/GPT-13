@@ -93,15 +93,15 @@ while IFS= read -r binary; do
 	done
 done < "$MACHO_LIST"
 
-[ "$(plutil -extract CFBundleIdentifier raw "$APP/Info.plist")" = "com.mandyims.muse13v2" ] \
+[ "$(plutil -extract CFBundleIdentifier raw "$APP/Info.plist")" = "com.mandyims.muse13v3" ] \
 	|| fail "unexpected app bundle identifier"
-[ "$(plutil -extract CFBundleDisplayName raw "$APP/Info.plist")" = "Muse Web 測試版" ] \
+[ "$(plutil -extract CFBundleDisplayName raw "$APP/Info.plist")" = "Muse Web 測試版 v3" ] \
 	|| fail "unexpected app display name"
-[ "$(plutil -extract CFBundleName raw "$APP/Info.plist")" = "Muse Web 測試版" ] \
+[ "$(plutil -extract CFBundleName raw "$APP/Info.plist")" = "Muse Web 測試版 v3" ] \
 	|| fail "unexpected app bundle name"
 [ "$(plutil -extract CFBundleShortVersionString raw "$APP/Info.plist")" = "$EXPECTED_VERSION" ] \
 	|| fail "unexpected app version"
-[ "$(plutil -extract CFBundleIdentifier raw "$HELPER_APP/Info.plist")" = "com.mandyims.muse13v2.helper" ] \
+[ "$(plutil -extract CFBundleIdentifier raw "$HELPER_APP/Info.plist")" = "com.mandyims.muse13v3.helper" ] \
 	|| fail "unexpected Helper bundle identifier"
 [ "$(plutil -extract CFBundlePackageType raw "$HELPER_APP/Info.plist")" = "XPC!" ] \
 	|| fail "unexpected Helper package type"
@@ -110,8 +110,8 @@ done < "$MACHO_LIST"
 [ "$(plutil -extract MinimumOSVersion raw "$HELPER_APP/Info.plist")" = "13.0" ] \
 	|| fail "unexpected Helper minimum OS"
 
-plutil -extract CFBundleURLTypes xml1 -o - "$APP/Info.plist" | grep -q '<string>muse13v2</string>' \
-	|| fail "missing muse13v2 URL scheme"
+plutil -extract CFBundleURLTypes xml1 -o - "$APP/Info.plist" | grep -q '<string>muse13v3</string>' \
+	|| fail "missing muse13v3 URL scheme"
 for permission in NSCameraUsageDescription NSMicrophoneUsageDescription NSPhotoLibraryUsageDescription; do
 	plutil -extract "$permission" raw "$APP/Info.plist" >/dev/null \
 		|| fail "missing $permission"
