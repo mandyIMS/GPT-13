@@ -341,19 +341,19 @@ if standardConfiguration.platformOverride != "Linux armv81"
     failures.append("Standard navigator overrides do not match Reynard")
 }
 
-if GPTDeepLink.site(for: URL(string: "muse13v2://muse.ai")!)?.name != "Muse" {
+if GPTDeepLink.site(for: URL(string: "muse13v3://muse.ai")!)?.name != "Muse" {
     failures.append("Deep link to Muse does not resolve to the Muse site")
 }
-if GPTDeepLink.site(for: URL(string: "muse13v2://claude.ai")!)?.name != "Claude" {
+if GPTDeepLink.site(for: URL(string: "muse13v3://claude.ai")!)?.name != "Claude" {
     failures.append("Deep link to Claude does not resolve to the Claude site")
 }
-if GPTDeepLink.site(for: URL(string: "muse13v2://gemini.google.com")!)?.name != "Gemini" {
+if GPTDeepLink.site(for: URL(string: "muse13v3://gemini.google.com")!)?.name != "Gemini" {
     failures.append("Deep link to Gemini does not resolve to the Gemini site")
 }
-if GPTDeepLink.site(for: URL(string: "muse13v2://www.chatgpt.com")!)?.name != "ChatGPT" {
+if GPTDeepLink.site(for: URL(string: "muse13v3://www.chatgpt.com")!)?.name != "ChatGPT" {
     failures.append("Deep link with a www. prefix does not resolve to the ChatGPT site")
 }
-if GPTDeepLink.site(for: URL(string: "muse13v2://example.com")!) != nil {
+if GPTDeepLink.site(for: URL(string: "muse13v3://example.com")!) != nil {
     failures.append("Deep link to an unknown host should be ignored")
 }
 if GPTDeepLink.site(for: URL(string: "https://claude.ai/")!) != nil {
