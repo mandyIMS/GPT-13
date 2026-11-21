@@ -300,7 +300,7 @@ final class GPTBrowserViewController: UIViewController {
         session.load(url.absoluteString)
     }
 
-    /// Opens a `muse13v2://<host>` deep link from a Home Screen shortcut.
+    /// Opens a `muse13v3://<host>` deep link from a Home Screen shortcut.
     /// Unknown hosts are ignored. When the view has not loaded yet, the
     /// link is kept and applied as the initial page instead.
     func openDeepLink(_ url: URL) {
@@ -536,8 +536,9 @@ extension GPTBrowserViewController: NavigationDelegate {
     }
 
     private func closePopupSessionAfterDelay(_ popup: GeckoSession) {
-        Task { [weak self] in
-            try? await Task.sleep(for: .seconds(30))
+        // DispatchQueue.asyncAfter, not Task.sleep(for:), because the
+        // Duration-based sleep needs iOS 16 and this app targets iOS 13.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [weak self] in
             popup.close()
             self?.popupSessions.removeAll { $0 === popup }
         }
