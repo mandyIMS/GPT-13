@@ -138,12 +138,12 @@ enum GPTSiteStore {
     }
 }
 
-/// Deep links of the form `muse13v2://<host>`, opened from a Home Screen
+/// Deep links of the form `muse13v3://<host>`, opened from a Home Screen
 /// shortcut, jump straight to one of the app's sites (built-in or custom).
 /// Unknown hosts are ignored: the app stays on the current site and nothing
 /// is added to the site list.
 enum GPTDeepLink {
-    static let scheme = "muse13v2"
+    static let scheme = "muse13v3"
 
     static func site(for url: URL) -> GPTSite? {
         guard url.scheme?.lowercased() == scheme,
