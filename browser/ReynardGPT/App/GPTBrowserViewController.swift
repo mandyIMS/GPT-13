@@ -45,6 +45,10 @@ final class GPTBrowserViewController: UIViewController {
     private var focusedInputOffset: CGFloat = 0
     private var filePicker: GPTFilePicker?
     private var authenticationFlowActive = false
+    /// When the user last tapped something. A redirect that follows a tap
+    /// within a few seconds is part of that tap, so the policy lets it
+    /// stay in the app instead of blocking it as a silent redirect.
+    private var lastUserGestureDate: Date?
     private var activeUserAgentConfiguration = GPTUserAgentPolicy().configuration(
         for: GPTNavigationPolicy.homeURL,
         geckoVersion: GeckoRuntime.version
@@ -317,17 +321,25 @@ final class GPTBrowserViewController: UIViewController {
         for request: LoadRequest,
         topLevel: Bool = true
     ) -> GPTNavigationContext {
-        GPTNavigationContext(
+        let hasGesture = request.hasUserGesture || request.isUserInitiatedNavigation
+        if hasGesture {
+            lastUserGestureDate = Date()
+        }
+        let recentUserGesture = lastUserGestureDate.map {
+            Date().timeIntervalSince($0) < 5
+        } ?? false
+        return GPTNavigationContext(
             isTopLevel: topLevel,
             target: request.target == .current ? .current : .newWindow,
-            hasUserGesture: request.hasUserGesture || request.isUserInitiatedNavigation,
+            hasUserGesture: hasGesture,
             isRedirect: request.isRedirect,
             // Redirects sometimes carry no trigger URL; the page the user
             // is actually on is the honest "from" site (login redirects
             // to an auth host would otherwise be denied as coming from
             // nowhere and show a blank page).
             triggerURL: request.triggerUri.flatMap(URL.init(string:)) ?? currentURL,
-            authenticationFlowActive: authenticationFlowActive
+            authenticationFlowActive: authenticationFlowActive,
+            recentUserGesture: recentUserGesture
         )
     }
 
@@ -506,7 +518,8 @@ extension GPTBrowserViewController: NavigationDelegate {
             hasUserGesture: true,
             isRedirect: false,
             triggerURL: currentURL,
-            authenticationFlowActive: authenticationFlowActive
+            authenticationFlowActive: authenticationFlowActive,
+            recentUserGesture: true
         )
         let url = URL(string: uri)
         switch policy.decision(for: url, context: context) {
@@ -523,6 +536,16 @@ extension GPTBrowserViewController: NavigationDelegate {
             // and usable) and show the page in the current tab instead.
             let popup = makeReynardGPTInitialSession()
             popup.navigationDelegate = self
+            // A session that was never opened has no engine window, and
+            // GeckoSessionHandler drops every event from it (it guards
+            // on isOpen()), so the popup's navigations never reach
+            // routePopupRequest: the engine falls back to handing the
+            // URL to Safari, and popup logins (Claude) stay blank.
+            // That is why v3 still failed although this code was in
+            // the build. Open it with the window ID the engine gave
+            // us, the way upstream opens every session that does
+            // real work (SessionManager, AddonPopup, LinkPreview).
+            popup.open(windowId: windowId)
             popupSessions.append(popup)
             loadNewWindowURLOnce(url)
             closePopupSessionAfterDelay(popup)
