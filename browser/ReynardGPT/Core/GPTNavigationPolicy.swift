@@ -246,20 +246,17 @@ struct GPTNavigationPolicy {
         }
 
         // A link the user tapped, or a new window they asked for, opens in
-        // the app, whatever site it points to. A tap the page handled in
-        // JavaScript, or a navigation the site itself started, carries no
-        // gesture flag, but it is not a silent redirect: it starts from
-        // the page the user is on, so it stays in the app too. A redirect
-        // that follows a tap within a few seconds is part of that tap (a
-        // tracking link, a short link, a login hop). A redirect chain that
-        // is part of a login flow and started on one of the app's sites (or
-        // a login host) also stays in the app, so a login that passes
-        // through extra hosts does not end on a blank page. Only a silent
-        // redirect from somewhere else, with no tap behind it, is blocked.
+        // the app, whatever site it points to. A redirect that follows a
+        // tap within a few seconds is part of that tap (a tracking link, a
+        // short link, a login hop). A redirect chain that is part of a login
+        // flow and started on one of the app's sites (or a login host) also
+        // stays in the app, so a login that passes through extra hosts does
+        // not end on a blank page. Only a silent redirect from somewhere
+        // else, with no tap behind it, is blocked. (A plain navigation with
+        // no gesture flag is NOT allowed on the trigger alone: a site the
+        // user removed from their list must stay blocked, even when the
+        // navigation starts from a page they trust.)
         if context.hasUserGesture || context.target == .newWindow {
-            return .allowInApp
-        }
-        if !context.isRedirect && beganFromTrustedFlow(context.triggerURL) {
             return .allowInApp
         }
         if context.recentUserGesture {
