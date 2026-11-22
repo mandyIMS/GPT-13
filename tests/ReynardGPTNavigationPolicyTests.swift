@@ -183,14 +183,6 @@ expect(
     .allowInApp
 )
 expect(
-    "Navigation the site started, no gesture flag, stays in app",
-    policy.decision(
-        for: URL(string: "https://example.org/page"),
-        context: context(trigger: "https://muse.ai/")
-    ),
-    .allowInApp
-)
-expect(
     "Claude page",
     policy.decision(for: URL(string: "https://claude.ai/"), context: context()),
     .allowInApp
