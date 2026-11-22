@@ -28,7 +28,8 @@ private func context(
     gesture: Bool = false,
     redirect: Bool = false,
     trigger: String? = "https://muse.ai/",
-    auth: Bool = false
+    auth: Bool = false,
+    recentGesture: Bool = false
 ) -> GPTNavigationContext {
     GPTNavigationContext(
         isTopLevel: topLevel,
@@ -36,7 +37,8 @@ private func context(
         hasUserGesture: gesture,
         isRedirect: redirect,
         triggerURL: trigger.flatMap(URL.init(string:)),
-        authenticationFlowActive: auth
+        authenticationFlowActive: auth,
+        recentUserGesture: recentGesture
     )
 }
 
@@ -171,6 +173,22 @@ expect(
         context: context(redirect: true, trigger: "https://auth.anthropic.com/", auth: false)
     ),
     .deny
+)
+expect(
+    "Redirect right after a tap stays in app",
+    policy.decision(
+        for: URL(string: "https://example.org/final"),
+        context: context(redirect: true, trigger: "https://example.org/", recentGesture: true)
+    ),
+    .allowInApp
+)
+expect(
+    "Navigation the site started, no gesture flag, stays in app",
+    policy.decision(
+        for: URL(string: "https://example.org/page"),
+        context: context(trigger: "https://muse.ai/")
+    ),
+    .allowInApp
 )
 expect(
     "Claude page",
@@ -416,7 +434,7 @@ if GPTSiteStore.defaultSite(forDefaultURLString: nil) != nil
 }
 
         if failures.isEmpty {
-            print("ReynardGPT navigation and user-agent policies: 60 tests passed")
+            print("ReynardGPT navigation and user-agent policies: 62 tests passed")
         } else {
             failures.forEach { fputs("FAIL: \($0)\n", stderr) }
             exit(1)
