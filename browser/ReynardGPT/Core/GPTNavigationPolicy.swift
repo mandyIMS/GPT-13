@@ -235,10 +235,23 @@ struct GPTNavigationPolicy {
         }
 
         if isAuthenticationHost(host) {
-            if context.authenticationFlowActive || beganFromAllowedSite(context.triggerURL) {
+            // A login host is only ever reached through a login: a tap,
+            // a new window, a redirect right after a tap, or a hop
+            // inside a login flow. Those all stay in the app. The old
+            // fallback sent a tapped login link to the system browser,
+            // which breaks the login (the return hop has no way back),
+            // and a login hop whose trigger was not an allowed site
+            // ended on a blank page. Only a silent login-host
+            // navigation, with no tap and no login behind it, is
+            // blocked, and it is blocked in-app, never sent out.
+            if context.authenticationFlowActive
+                || beganFromTrustedFlow(context.triggerURL)
+                || context.hasUserGesture
+                || context.target == .newWindow
+                || context.recentUserGesture {
                 return .allowInApp
             }
-            return context.hasUserGesture ? .openExternally : .deny
+            return .deny
         }
 
         if isChallengeHost(host) {
