@@ -463,6 +463,11 @@ extension GPTBrowserViewController: NavigationDelegate {
         if policy.completesAuthenticationFlow(url) {
             authenticationFlowActive = false
         }
+        if authenticationFlowActive,
+           policy.beginsAuthenticationFlow(url),
+           isOAuthCallback(url) {
+            recoverStuckOAuthCallback(url)
+        }
     }
 
     func onCanGoBack(session: GeckoSession, canGoBack: Bool) {
@@ -558,13 +563,47 @@ extension GPTBrowserViewController: NavigationDelegate {
         }
     }
 
-    private func closePopupSessionAfterDelay(_ popup: GeckoSession) {
+    private func closePopupSessionAfterDelay(_ popup: GeckoSession, attemptsLeft: Int = 9) {
         // DispatchQueue.asyncAfter, not Task.sleep(for:), because the
         // Duration-based sleep needs iOS 16 and this app targets iOS 13.
+        // A login routinely takes longer than 30 seconds (pick an
+        // account, type a password, answer a verification), and closing
+        // the popup session mid-login cuts the flow off, so while a
+        // login is in progress the close waits and checks again. After
+        // about five minutes the login is abandoned and the session is
+        // closed anyway.
         DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [weak self] in
+            if let self, self.authenticationFlowActive, attemptsLeft > 0 {
+                self.closePopupSessionAfterDelay(popup, attemptsLeft: attemptsLeft - 1)
+                return
+            }
             popup.close()
             self?.popupSessions.removeAll { $0 === popup }
         }
+    }
+
+    /// An OAuth callback page (a login host URL carrying the `code` the
+    /// login issued) is expected to send the user onward within a
+    /// moment, either by redirecting or by closing itself. If it is
+    /// still the visible page a few seconds later, it is stuck: the tab
+    /// sits on a blank callback page and the login never finishes.
+    /// Take the tab to the site's home page instead, where the login
+    /// cookie the callback set signs the user in. A page that moves on
+    /// by itself, or a login that already finished, is left alone.
+    private func recoverStuckOAuthCallback(_ callbackURL: URL) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            guard let self,
+                  self.authenticationFlowActive,
+                  self.currentURL == callbackURL else { return }
+            self.authenticationFlowActive = false
+            self.session.load(GPTNavigationPolicy.homeURL.absoluteString)
+        }
+    }
+
+    private func isOAuthCallback(_ url: URL) -> Bool {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let items = components.queryItems else { return false }
+        return items.contains { $0.name == "code" || $0.name == "state" }
     }
 
     /// A navigation inside a background (popup) session: show it in the
@@ -683,6 +722,28 @@ extension GPTBrowserViewController: PermissionEmbedderDelegate {
 }
 
 extension GPTBrowserViewController: ContentDelegate {
+    func onCloseRequest(session: GeckoSession) {
+        // An OAuth callback page is written to close its own popup
+        // window once the login is done (it hands the code to its
+        // opener and calls window.close()). When that page ends up in
+        // the visible tab — the app routes popup pages there — there is
+        // no opener and no popup to close, so the tab just sits on the
+        // callback page, which renders blank. Treat the close request
+        // as "login finished": take the visible tab back to the site's
+        // home page, where the login cookie the callback set puts the
+        // user straight into the site. A close request from a
+        // background popup session just closes that popup. A close
+        // request outside a login is ignored.
+        if session === self.session {
+            guard authenticationFlowActive || policy.beginsAuthenticationFlow(currentURL) else { return }
+            authenticationFlowActive = false
+            session.load(GPTNavigationPolicy.homeURL.absoluteString)
+            return
+        }
+        session.close()
+        popupSessions.removeAll { $0 === session }
+    }
+
     func onSlowScript(session: GeckoSession, scriptFileName: String) async -> SlowScriptResponse {
         .resume
     }
