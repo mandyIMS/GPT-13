@@ -278,6 +278,38 @@ expect(
     .allowInApp
 )
 expect(
+    "Auth host tapped from an untrusted page stays in app",
+    policy.decision(
+        for: URL(string: "https://accounts.google.com/o/oauth2/auth"),
+        context: context(gesture: true, trigger: "https://example.org/")
+    ),
+    .allowInApp
+)
+expect(
+    "Auth host in a new window stays in app",
+    policy.decision(
+        for: URL(string: "https://accounts.google.com/o/oauth2/auth"),
+        context: context(target: .newWindow, trigger: "https://example.org/")
+    ),
+    .allowInApp
+)
+expect(
+    "Auth host hop inside a login flow stays in app",
+    policy.decision(
+        for: URL(string: "https://accounts.google.com/o/oauth2/auth"),
+        context: context(trigger: "https://auth.anthropic.com/")
+    ),
+    .allowInApp
+)
+expect(
+    "Auth host redirect after a tap stays in app",
+    policy.decision(
+        for: URL(string: "https://accounts.google.com/o/oauth2/auth"),
+        context: context(redirect: true, trigger: "https://example.org/", recentGesture: true)
+    ),
+    .allowInApp
+)
+expect(
     "Cloudflare challenge from Gemini",
     policy.decision(
         for: URL(string: "https://challenges.cloudflare.com/turnstile/v0/"),
@@ -426,7 +458,7 @@ if GPTSiteStore.defaultSite(forDefaultURLString: nil) != nil
 }
 
         if failures.isEmpty {
-            print("ReynardGPT navigation and user-agent policies: 62 tests passed")
+            print("ReynardGPT navigation and user-agent policies: 66 tests passed")
         } else {
             failures.forEach { fputs("FAIL: \($0)\n", stderr) }
             exit(1)
