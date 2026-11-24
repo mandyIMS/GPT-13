@@ -64,6 +64,17 @@ final class GPTBrowserViewController: UIViewController {
     /// the page itself is shown in the current tab instead. Closed after
     /// a delay so they do not pile up.
     private var popupSessions: [GeckoSession] = []
+    /// A login popup currently shown in place of the main tab. Google
+    /// and similar logins open a real popup window and expect it to talk
+    /// back to the page that opened it (window.opener); stuffing the
+    /// popup's page into the main tab leaves no opener, so the login
+    /// stalls on a blank page. A login popup is therefore shown as its
+    /// own temporary tab, and the main tab is restored when it closes
+    /// or finishes.
+    private var displayedPopupSession: GeckoSession?
+    /// The main tab's URL before a login popup was shown, restored when
+    /// the popup goes away so the tab keeps tracking the page it was on.
+    private var mainSessionURLBeforePopup: URL?
 
     private lazy var backItem = UIBarButtonItem(
         image: UIImage(systemName: "chevron.backward"),
@@ -249,11 +260,11 @@ final class GPTBrowserViewController: UIViewController {
     }
 
     @objc private func goBack() {
-        session.goBack()
+        (displayedPopupSession ?? session).goBack()
     }
 
     @objc private func reloadPage() {
-        session.reload()
+        (displayedPopupSession ?? session).reload()
     }
 
     @objc private func showDownloads() {
@@ -436,8 +447,40 @@ final class GPTBrowserViewController: UIViewController {
         }
         lastNewWindowLoad = (url, Date())
         DispatchQueue.main.async { [weak self] in
-            self?.session.load(url.absoluteString)
+            guard let self else { return }
+            // A new-window page goes to the tab on screen: the main
+            // tab, or a login popup shown in its place.
+            (self.displayedPopupSession ?? self.session).load(url.absoluteString)
         }
+    }
+
+    /// Whether this session is the login popup currently on screen.
+    private func isDisplayedPopup(_ s: GeckoSession) -> Bool {
+        displayedPopupSession.map { s === $0 } ?? false
+    }
+
+    /// Shows a login popup as its own temporary tab and remembers the
+    /// main tab's URL so it can be restored when the popup goes away.
+    private func showLoginPopup(_ popup: GeckoSession) {
+        mainSessionURLBeforePopup = currentURL
+        displayedPopupSession = popup
+        geckoView.session = popup
+    }
+
+    /// Puts the main tab back on screen when a login popup goes away
+    /// and closes the popup session. The main tab's page is left alone
+    /// so a login it is finishing (it just heard back from the popup)
+    /// is not interrupted.
+    private func hideLoginPopup() {
+        guard let popup = displayedPopupSession else { return }
+        displayedPopupSession = nil
+        if let mainURL = mainSessionURLBeforePopup {
+            currentURL = mainURL
+            mainSessionURLBeforePopup = nil
+        }
+        geckoView.session = session
+        popup.close()
+        popupSessions.removeAll { $0 === popup }
     }
 
     private func confirm(title: String, message: String?) async -> Bool {
@@ -456,27 +499,56 @@ final class GPTBrowserViewController: UIViewController {
 
 extension GPTBrowserViewController: NavigationDelegate {
     func onLocationChange(session: GeckoSession, url: String?, permissions: [ContentPermission]) {
-        guard session === self.session else { return }
+        guard session === self.session || isDisplayedPopup(session) else { return }
         guard let url = url.flatMap(URL.init(string:)) else { return }
         currentURL = url
-        updateUserAgent(for: url)
+        // The user-agent configuration belongs to the main tab's page;
+        // a login popup keeps the settings it was created with, so a
+        // popup navigation must not reconfigure the main tab (which is
+        // waiting, as the opener, for the login to report back).
+        if !isDisplayedPopup(session) {
+            updateUserAgent(for: url)
+        }
+        let wasAuthActive = authenticationFlowActive
         if policy.completesAuthenticationFlow(url) {
             authenticationFlowActive = false
+            // The login popup reached the site itself: the login
+            // finished. Put the main tab back and take it to the
+            // site's home page, where the login cookie signs the user
+            // in. A callback page (carrying a code) is left alone
+            // until it moves on or the stuck-callback recovery below
+            // rescues it.
+            if isDisplayedPopup(session), !isOAuthCallback(url) {
+                hideLoginPopup()
+                self.session.load(GPTNavigationPolicy.homeURL.absoluteString)
+                return
+            }
         }
-        if authenticationFlowActive,
-           policy.beginsAuthenticationFlow(url),
-           isOAuthCallback(url) {
+        // A callback page (carrying the login's code) that is still
+        // the visible page a few seconds later is stuck; rescue it.
+        // This covers callbacks on a login host and callbacks that
+        // landed back on the site itself.
+        if isOAuthCallback(url),
+           policy.beginsAuthenticationFlow(url) || policy.completesAuthenticationFlow(url),
+           wasAuthActive || isDisplayedPopup(session) {
             recoverStuckOAuthCallback(url)
         }
     }
 
     func onCanGoBack(session: GeckoSession, canGoBack: Bool) {
-        guard session === self.session else { return }
+        guard session === self.session || isDisplayedPopup(session) else { return }
         backItem.isEnabled = canGoBack
     }
 
     func onLoadRequest(session: GeckoSession, request: LoadRequest) async -> AllowOrDeny {
         if session !== self.session {
+            // A login popup shown on screen loads its own pages in
+            // place, so its login can talk back to the main tab that
+            // opened it. Other background popups are still routed to
+            // the visible tab.
+            if isDisplayedPopup(session) {
+                return decidePopupRequest(request)
+            }
             return routePopupRequest(request)
         }
         let url = URL(string: request.uri)
@@ -493,6 +565,9 @@ extension GPTBrowserViewController: NavigationDelegate {
 
     func onPreNavigation(session: GeckoSession, request: LoadRequest) async -> AllowOrDeny {
         if session !== self.session {
+            if isDisplayedPopup(session) {
+                return decidePopupRequest(request)
+            }
             return routePopupRequest(request)
         }
         let url = URL(string: request.uri)
@@ -529,9 +604,10 @@ extension GPTBrowserViewController: NavigationDelegate {
         let url = URL(string: uri)
         switch policy.decision(for: url, context: context) {
         case .allowInApp:
-            updateUserAgent(for: url)
             if policy.beginsAuthenticationFlow(url) {
                 authenticationFlowActive = true
+            } else {
+                updateUserAgent(for: url)
             }
             // The engine needs a real session for a new window. Returning
             // nil made it hand the URL to the system browser, even for a
@@ -539,8 +615,14 @@ extension GPTBrowserViewController: NavigationDelegate {
             // navigations are routed to the visible tab by
             // routePopupRequest, so popup logins and links are visible
             // and usable) and show the page in the current tab instead.
+            // A login popup is different: the login expects a real
+            // popup window that talks back to the page that opened it,
+            // so it is shown as its own temporary tab instead, and the
+            // main tab is restored when it closes or finishes.
             let popup = makeReynardGPTInitialSession()
             popup.navigationDelegate = self
+            popup.progressDelegate = self
+            popup.contentDelegate = self
             // A session that was never opened has no engine window, and
             // GeckoSessionHandler drops every event from it (it guards
             // on isOpen()), so the popup's navigations never reach
@@ -552,7 +634,14 @@ extension GPTBrowserViewController: NavigationDelegate {
             // real work (SessionManager, AddonPopup, LinkPreview).
             popup.open(windowId: windowId)
             popupSessions.append(popup)
-            loadNewWindowURLOnce(url)
+            if policy.beginsAuthenticationFlow(url), displayedPopupSession == nil {
+                showLoginPopup(popup)
+            } else {
+                // A login popup is already on screen (or this is not a
+                // login): the page goes to the tab on screen, which is
+                // the popup already showing if there is one.
+                loadNewWindowURLOnce(url)
+            }
             closePopupSessionAfterDelay(popup)
             return popup
         case .openExternally:
@@ -573,6 +662,18 @@ extension GPTBrowserViewController: NavigationDelegate {
         // about five minutes the login is abandoned and the session is
         // closed anyway.
         DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [weak self] in
+            if let self, self.isDisplayedPopup(popup) {
+                // A login popup on screen is not closed while the user
+                // is still working in it. Past the wait it is put away
+                // first (the main tab comes back) so the screen does
+                // not go blank, and then it is closed.
+                if self.authenticationFlowActive, attemptsLeft > 0 {
+                    self.closePopupSessionAfterDelay(popup, attemptsLeft: attemptsLeft - 1)
+                    return
+                }
+                self.hideLoginPopup()
+                return
+            }
             if let self, self.authenticationFlowActive, attemptsLeft > 0 {
                 self.closePopupSessionAfterDelay(popup, attemptsLeft: attemptsLeft - 1)
                 return
@@ -593,9 +694,14 @@ extension GPTBrowserViewController: NavigationDelegate {
     private func recoverStuckOAuthCallback(_ callbackURL: URL) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
             guard let self,
-                  self.authenticationFlowActive,
+                  self.authenticationFlowActive || self.displayedPopupSession != nil,
                   self.currentURL == callbackURL else { return }
             self.authenticationFlowActive = false
+            // If the stuck page is a login popup on screen, put the
+            // main tab back first so the rescue is visible.
+            if self.displayedPopupSession != nil {
+                self.hideLoginPopup()
+            }
             self.session.load(GPTNavigationPolicy.homeURL.absoluteString)
         }
     }
@@ -604,6 +710,29 @@ extension GPTBrowserViewController: NavigationDelegate {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let items = components.queryItems else { return false }
         return items.contains { $0.name == "code" || $0.name == "state" }
+    }
+
+    /// Decides a navigation inside the login popup shown on screen.
+    /// Unlike a background popup, it loads in place (allow) so the
+    /// login keeps its window and opener; it never touches the main
+    /// tab's user-agent configuration.
+    private func decidePopupRequest(_ request: LoadRequest) -> AllowOrDeny {
+        let url = URL(string: request.uri)
+        let context = navigationContext(for: request)
+        switch policy.decision(for: url, context: context) {
+        case .allowInApp:
+            if policy.beginsAuthenticationFlow(url) {
+                authenticationFlowActive = true
+            }
+            return .allow
+        case .openExternally:
+            if let url {
+                openInDefaultBrowserOnce(url)
+            }
+            return .deny
+        case .deny:
+            return .deny
+        }
     }
 
     /// A navigation inside a background (popup) session: show it in the
@@ -638,18 +767,18 @@ extension GPTBrowserViewController: NavigationDelegate {
 
 extension GPTBrowserViewController: ProgressDelegate {
     func onPageStart(session: GeckoSession, url: String) {
-        guard session === self.session else { return }
+        guard session === self.session || isDisplayedPopup(session) else { return }
         progressView.isHidden = false
         progressView.progress = 0.05
     }
 
     func onProgressChange(session: GeckoSession, progress: Int) {
-        guard session === self.session else { return }
+        guard session === self.session || isDisplayedPopup(session) else { return }
         progressView.setProgress(Float(progress) / 100, animated: true)
     }
 
     func onPageStop(session: GeckoSession, success: Bool) {
-        guard session === self.session else { return }
+        guard session === self.session || isDisplayedPopup(session) else { return }
         progressView.setProgress(1, animated: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             self?.progressView.isHidden = true
@@ -740,6 +869,14 @@ extension GPTBrowserViewController: ContentDelegate {
             session.load(GPTNavigationPolicy.homeURL.absoluteString)
             return
         }
+        if isDisplayedPopup(session) {
+            // The login popup closed itself: its login finished and it
+            // handed the result back to the main tab. Put the main tab
+            // back on screen and let it finish signing in; its page
+            // is left alone so the login it is finishing is not cut off.
+            hideLoginPopup()
+            return
+        }
         session.close()
         popupSessions.removeAll { $0 === session }
     }
@@ -749,6 +886,13 @@ extension GPTBrowserViewController: ContentDelegate {
     }
 
     func onCrash(session: GeckoSession) {
+        if session !== self.session, !isDisplayedPopup(session) {
+            // A background popup crashed; drop it without touching
+            // the screen.
+            session.close()
+            popupSessions.removeAll { $0 === session }
+            return
+        }
         session.close()
         session.open()
         geckoView.session = session
